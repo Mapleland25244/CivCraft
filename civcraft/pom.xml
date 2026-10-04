@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.avrgaming</groupId>
+    <artifactId>civcraft-parent</artifactId>
+    <version>1.8.0-Beta6</version>
+  </parent>
+
+  <artifactId>civcraft</artifactId>
+  <name>CivCraft</name>
+
+  <build>
+    <finalName>CivCraft</finalName>
+
+    <!-- Keep the Eclipse layout: .java and plugin.yml / config.yml all live in src/ -->
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <!-- Same as the old hand-written "manifest" file: these jars are loaded from plugins/CivCraft/lib at runtime. -->
+              <Class-Path>CivCraft/lib/bonecp.jar CivCraft/lib/guava.jar CivCraft/lib/slf4j-api.jar CivCraft/lib/slf4j-simple.jar CivCraft/lib/json.jar</Class-Path>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <!-- ============================================================
+         1. Server API + NMS (v1_12_R1). Local repo only (BuildTools).
+         ============================================================ -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>${spigot.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>${spigot.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- ============================================================
+         2. Maven Central. 'provided' because nothing is shaded: the Class-Path in the
+            manifest loads the matching jars from plugins/CivCraft/lib at runtime.
+         ============================================================ -->
+    <dependency>
+      <groupId>com.jolbox</groupId>
+      <artifactId>bonecp</artifactId>
+      <version>0.8.0.RELEASE</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>15.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!-- lib/json.jar is dated 2014-01-25; 20140107 is the closest Central release (inferred, not byte-identical). -->
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20140107</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- ============================================================
+         3. Jars tracked in git under civcraft/lib (not on Central).
+         ============================================================ -->
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>dhutils</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/dhutils.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>moblib</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/MobLib.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>vanishnopacket</artifactId>
+      <version>3.20</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/VanishNoPacket.jar</systemPath>
+    </dependency>
+
+    <!-- ============================================================
+         4. Third-party plugin jars. NOT tracked in git (see .gitignore): each developer
+            places them in civcraft/lib.
+         ============================================================ -->
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>vault</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/Vault.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>herochat</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/Herochat.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>worldborder</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/WorldBorder.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>nocheatplus</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/NoCheatPlus.jar</systemPath>
+    </dependency>
+    <dependency>
+      <!-- Provides org.kitteh.tag.* only. -->
+      <groupId>local</groupId>
+      <artifactId>tagapi</artifactId>
+      <version>1.1.9</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/TagAPI.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>local</groupId>
+      <artifactId>titleapi</artifactId>
+      <version>1.7.4</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/TitleAPI-1.7.4.jar</systemPath>
+    </dependency>
+    <dependency>
+      <!-- The original Eclipse project used 4.0-INDEV; the API may differ slightly. -->
+      <groupId>local</groupId>
+      <artifactId>custommobs</artifactId>
+      <version>4.17</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/CustomMobs-4.17.jar</systemPath>
+    </dependency>
+
+    <!-- Town, SyncUpdateTags and SyncUpdateTagsBetweenCivs import net.md_5.itag.iTag, which no available jar
+         contains. Compile against a stub; at runtime the real iTag plugin supplies the class.
+         If a real iTag jar becomes available, replace this with a system dependency on it. -->
+    <dependency>
+      <groupId>com.avrgaming</groupId>
+      <artifactId>itag-stub</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- ============================================================
+         5. Test libs. unittests/TestMultiInventory lives under src/, so they are needed at compile time.
+         ============================================================ -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>

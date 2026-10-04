@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.avrgaming</groupId>
+    <artifactId>civcraft-parent</artifactId>
+    <version>1.8.0-Beta6</version>
+  </parent>
+
+  <artifactId>itag-stub</artifactId>
+  <name>iTag compile-time stub</name>
+  <description>
+    Compile-only stand-in for net.md_5.itag.iTag, which is not available as a jar.
+    It declares just the methods CivCraft calls. Never ship it: civcraft depends on it with 'provided' scope,
+    and at runtime the real iTag plugin supplies the class.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>${spigot.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
