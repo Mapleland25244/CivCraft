@@ -25,6 +25,16 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
+      <!-- CivSettings and Localize stream /data/*.yml and /localization/default_lang.yml out of the jar
+           when they are missing on disk, so they must be packaged. -->
+      <resource>
+        <directory>data</directory>
+        <targetPath>data</targetPath>
+      </resource>
+      <resource>
+        <directory>localization</directory>
+        <targetPath>localization</targetPath>
+      </resource>
     </resources>
 
     <plugins>
