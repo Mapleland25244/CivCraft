@@ -57,11 +57,13 @@ public class CivData {
 	public static final int GOLD_INGOT = 266;
 	public static final int WATER = 9;
 	public static final int WATER_RUNNING = 8;
+	public static final int WATER_STILL = 9;
 	public static final int FENCE = 85;
 	public static final int BEDROCK = 7;
 	public static final int RAILROAD = 66;
 	public static final int LAVA = 11;
 	public static final int LAVA_RUNNING = 10;
+	public static final int LAVA_STILL = 11;
 	public static final int COBBLESTONE = 4;
 	public static final int MOSS_STONE = 48;
 	public static final int EMERALD = 388;
