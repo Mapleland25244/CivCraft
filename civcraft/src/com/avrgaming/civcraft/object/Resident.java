@@ -758,8 +758,8 @@ public class Resident extends SQLObject {
 			return 0;
 		}
 
-		if ((player.getInventory().getItemInMainHand().getTypeId() != itemId) &&
-				(player.getInventory().getItemInMainHand().getTypeId() != itemData)) {
+		if ((ItemManager.getId(player.getInventory().getItemInMainHand()) != itemId) &&
+				(ItemManager.getId(player.getInventory().getItemInMainHand()) != itemData)) {
 			return 0;
 		}
 		
@@ -781,8 +781,8 @@ public class Resident extends SQLObject {
 			return false;
 		}
 
-		if ((player.getInventory().getItemInMainHand().getTypeId() != itemId) &&
-				(player.getInventory().getItemInMainHand().getTypeId() != itemData)) {
+		if ((ItemManager.getId(player.getInventory().getItemInMainHand()) != itemId) &&
+				(ItemManager.getId(player.getInventory().getItemInMainHand()) != itemData)) {
 			return false;
 		}
 		
@@ -813,7 +813,7 @@ public class Resident extends SQLObject {
 		stacks = inv.all(itemId);
 		
 		for (ItemStack stack : stacks.values()) {
-			if (stack.getData().getData() != (byte)itemData) {
+			if (ItemManager.getData(stack.getData()) != (byte)itemData) {
 				continue;
 			}
 			

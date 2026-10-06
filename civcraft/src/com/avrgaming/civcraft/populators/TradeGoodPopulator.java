@@ -103,9 +103,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 
     	if (state instanceof Sign) {
     		Sign sign = (Sign)state;
-    		org.bukkit.material.Sign data = (org.bukkit.material.Sign)state.getData();
-
-    		data.setFacingDirection(direction);
+    		ItemManager.setSignFacing(state, direction);
     		sign.setLine(0, CivSettings.localize.localizedString("TradeGoodSign_Heading"));
     		sign.setLine(1, "----");
     		sign.setLine(2, good.name);

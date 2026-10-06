@@ -21,7 +21,6 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.material.MaterialData;
 
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivData;
@@ -208,9 +207,9 @@ public class PostBuildSyncTask implements Runnable {
 					ItemManager.setData(block, chestData, true);}
 				
 					Chest chest = (Chest)block.getState();
-					MaterialData data = chest.getData();
+					ItemManager.reapplyData(chest);
 //					ItemManager.setData(data, chestData);
-					chest.setData(data);
+
 					chest.update();
 //				}
 				
@@ -405,9 +404,9 @@ public class PostBuildSyncTask implements Runnable {
 					ItemManager.setData(block, chestData, true); }
 				
 					Chest chest = (Chest)block.getState();
-					MaterialData data = chest.getData();
+					ItemManager.reapplyData(chest);
 //					ItemManager.setData(data, chestData);
-					chest.setData(data);
+
 					chest.update();
 //				}
 				

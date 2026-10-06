@@ -41,6 +41,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.exception.CivException;
@@ -387,7 +388,7 @@ public class UnitMaterial extends LoreMaterial {
 			ItemStack droppedStack, ItemStack pickedStack) {
 		
 		// Prevent stacking items
-		if (droppedStack.getTypeId() == pickedStack.getTypeId()) {
+		if (ItemManager.getId(droppedStack) == ItemManager.getId(pickedStack)) {
 			event.setCancelled(true);
 			event.setResult(Result.DENY);
 			Player player = getPlayer(event);

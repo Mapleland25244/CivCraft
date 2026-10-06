@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -157,6 +158,38 @@ public class ItemManager {
 		meta.setDisplayName(itemDisplayName);
 		skull.setItemMeta(meta);
 		return skull;
+	}
+
+	/**
+	 * Facing of a placed dispenser. Legacy: stored in the block data (org.bukkit.material.Dispenser).
+	 */
+	@SuppressWarnings("deprecation")
+	public static BlockFace getDispenserFacing(BlockState dispenser) {
+		return ((org.bukkit.material.Dispenser) dispenser.getData()).getFacing();
+	}
+
+	/**
+	 * Set the facing of a sign state; the caller still has to call update().
+	 */
+	@SuppressWarnings("deprecation")
+	public static void setSignFacing(BlockState sign, BlockFace face) {
+		((org.bukkit.material.Sign) sign.getData()).setFacingDirection(face);
+	}
+
+	/**
+	 * Write the state's own data back to it (the caller still has to call update()).
+	 */
+	@SuppressWarnings("deprecation")
+	public static void reapplyData(BlockState state) {
+		state.setData(state.getData());
+	}
+
+	/**
+	 * Copy the material data (legacy damage/variant bits) of one stack onto another.
+	 */
+	@SuppressWarnings("deprecation")
+	public static void copyData(ItemStack from, ItemStack to) {
+		to.setData(from.getData());
 	}
 
 	public static boolean removeItemFromPlayer(Player player, Material mat, int amount) {
