@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigMission;
 import com.avrgaming.civcraft.config.ConfigUnit;
@@ -260,25 +261,25 @@ public abstract class Unit {
 	public static boolean isWearingAnyGold(Player player) {
 		
 		if (player.getEquipment().getBoots() != null) {
-			if (player.getEquipment().getBoots().getType().equals(Material.GOLD_BOOTS)) {
+			if (LegacyMaterials.isGoldArmor(player.getEquipment().getBoots().getType())) {
 				return true;
 			}
 		}
 		
 		if (player.getEquipment().getChestplate() != null) {
-			if (player.getEquipment().getChestplate().getType().equals(Material.GOLD_CHESTPLATE)) {
+			if (LegacyMaterials.isGoldArmor(player.getEquipment().getChestplate().getType())) {
 				return true;
 			}
 		}
 		
 		if (player.getEquipment().getHelmet() != null) {
-			if (player.getEquipment().getHelmet().getType().equals(Material.GOLD_HELMET)) {
+			if (LegacyMaterials.isGoldArmor(player.getEquipment().getHelmet().getType())) {
 				return true;
 			}
 		}
 		
 		if (player.getEquipment().getLeggings() != null) {
-			if (player.getEquipment().getLeggings().getType().equals(Material.GOLD_LEGGINGS)) {
+			if (LegacyMaterials.isGoldArmor(player.getEquipment().getLeggings().getType())) {
 				return true;
 			}
 		}

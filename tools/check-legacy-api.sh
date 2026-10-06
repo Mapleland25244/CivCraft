@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.." || exit 2
 
 SRC=civcraft/src
 BASELINE=tools/legacy-api-baseline.txt
-BOUNDARY='util/ItemManager.java'
+BOUNDARY='util/ItemManager.java|/compat/'
 
 # name|regex  (extended regex, matched per line; comment-only lines are ignored)
 CATEGORIES=(
@@ -33,7 +33,7 @@ domain_receivers() { grep -vE '(^|[^A-Za-z0-9_])(sb|bs|nextBs|nextBlock|commandB
 
 list_hits() {
 	grep -rnE --include=*.java "$1" "$SRC" 2>/dev/null \
-		| grep -v "$BOUNDARY" \
+		| grep -vE "$BOUNDARY" \
 		| grep -v 'ItemManager\.' \
 		| strip_comments \
 		| domain_receivers

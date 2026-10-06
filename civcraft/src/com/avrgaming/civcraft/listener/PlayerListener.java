@@ -61,6 +61,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
@@ -423,7 +424,7 @@ public class PlayerListener implements Listener {
 			event.getContents().contains(Material.GHAST_TEAR) ||
 			event.getContents().contains(Material.FERMENTED_SPIDER_EYE) ||
 			event.getContents().contains(Material.BLAZE_POWDER) ||
-			event.getContents().contains(Material.SULPHUR)) {
+			event.getContents().contains(LegacyMaterials.gunpowder())) {
 			event.setCancelled(true);
 		}
 		

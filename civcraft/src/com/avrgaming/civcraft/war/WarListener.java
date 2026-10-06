@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.camp.CampBlock;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -78,8 +79,7 @@ public class WarListener implements Listener {
 			event.getBlock().getType().equals(Material.SAND) ||
 			event.getBlock().getType().equals(Material.GRAVEL) ||
 			event.getBlock().getType().equals(Material.TORCH) ||
-			event.getBlock().getType().equals(Material.REDSTONE_TORCH_OFF) ||
-			event.getBlock().getType().equals(Material.REDSTONE_TORCH_ON) ||
+			LegacyMaterials.isRedstoneTorch(event.getBlock().getType()) ||
 			event.getBlock().getType().equals(Material.REDSTONE) ||
 			event.getBlock().getType().equals(Material.TNT) ||
 			event.getBlock().getType().equals(Material.LADDER) ||
@@ -123,8 +123,7 @@ public class WarListener implements Listener {
 			event.getBlock().getType().equals(Material.SAND) ||
 			event.getBlock().getType().equals(Material.GRAVEL) ||
 			event.getBlock().getType().equals(Material.TORCH) ||
-			event.getBlock().getType().equals(Material.REDSTONE_TORCH_OFF) ||
-			event.getBlock().getType().equals(Material.REDSTONE_TORCH_ON) ||
+			LegacyMaterials.isRedstoneTorch(event.getBlock().getType()) ||
 			event.getBlock().getType().equals(Material.REDSTONE) ||
 			event.getBlock().getType().equals(Material.LADDER) ||
 			event.getBlock().getType().equals(Material.VINE) ||

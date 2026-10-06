@@ -27,6 +27,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigArena;
 import com.avrgaming.civcraft.config.ConfigArenaTeam;
@@ -382,8 +383,7 @@ public class ArenaManager implements Runnable {
 			Location loc = coord.getCenteredLocation();
 			loc.setWorld(world);
 			
-			if (loc.getBlock().getType().equals(Material.SIGN_POST) ||
-			    loc.getBlock().getType().equals(Material.WALL_SIGN)) {
+			if (LegacyMaterials.isSign(loc.getBlock().getType())) {
 				Sign sign = (Sign)loc.getBlock().getState();
 				sign.setLine(0, "");
 				sign.setLine(1, "Respawn");

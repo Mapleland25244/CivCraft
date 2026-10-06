@@ -12,6 +12,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.generator.BlockPopulator;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigMobSpawner;
 import com.avrgaming.civcraft.main.CivData;
@@ -92,7 +93,7 @@ public class MobSpawnerPopulator extends BlockPopulator {
         }
 
         Block signBlock = top.getRelative(direction);
-        signBlock.setType(Material.WALL_SIGN);
+        signBlock.setType(LegacyMaterials.wallSign());
         //TODO make sign a structure sign?
                 //          Civ.protectedBlockTable.put(Civ.locationHash(signBlock.getLocation()), 
         //                  new ProtectedBlock(signBlock, null, null, null, ProtectedBlock.Type.TRADE_MARKER));

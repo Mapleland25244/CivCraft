@@ -45,6 +45,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.endgame.ConfigEndCondition;
 import com.avrgaming.civcraft.exception.CivException;
@@ -348,37 +349,7 @@ public class CivSettings {
 	}
 	
 	private static void initRestrictedUndoBlocks() {
-		restrictedUndoBlocks.add(Material.CROPS);
-		restrictedUndoBlocks.add(Material.CARROT);
-		restrictedUndoBlocks.add(Material.POTATO);
-		restrictedUndoBlocks.add(Material.REDSTONE);
-		restrictedUndoBlocks.add(Material.REDSTONE_WIRE);
-		restrictedUndoBlocks.add(Material.REDSTONE_TORCH_OFF);
-		restrictedUndoBlocks.add(Material.REDSTONE_TORCH_ON);
-		restrictedUndoBlocks.add(Material.DIODE_BLOCK_OFF);
-		restrictedUndoBlocks.add(Material.DIODE_BLOCK_ON);
-		restrictedUndoBlocks.add(Material.REDSTONE_COMPARATOR_OFF);
-		restrictedUndoBlocks.add(Material.REDSTONE_COMPARATOR_ON);
-		restrictedUndoBlocks.add(Material.REDSTONE_COMPARATOR);
-		restrictedUndoBlocks.add(Material.STRING);
-		restrictedUndoBlocks.add(Material.TRIPWIRE);
-		restrictedUndoBlocks.add(Material.SUGAR_CANE_BLOCK);
-		restrictedUndoBlocks.add(Material.BEETROOT_SEEDS);
-		restrictedUndoBlocks.add(Material.LONG_GRASS);
-		restrictedUndoBlocks.add(Material.RED_ROSE);
-		restrictedUndoBlocks.add(Material.RED_MUSHROOM);
-		restrictedUndoBlocks.add(Material.DOUBLE_PLANT);
-		restrictedUndoBlocks.add(Material.CAKE_BLOCK);
-		restrictedUndoBlocks.add(Material.CACTUS);
-		restrictedUndoBlocks.add(Material.PISTON_BASE);
-		restrictedUndoBlocks.add(Material.PISTON_EXTENSION);
-		restrictedUndoBlocks.add(Material.PISTON_MOVING_PIECE);
-		restrictedUndoBlocks.add(Material.PISTON_STICKY_BASE);
-		restrictedUndoBlocks.add(Material.TRIPWIRE_HOOK);
-		restrictedUndoBlocks.add(Material.SAPLING);
-		restrictedUndoBlocks.add(Material.PUMPKIN_STEM);
-		restrictedUndoBlocks.add(Material.MELON_STEM);
-		
+		LegacyMaterials.fillRestrictedUndoBlocks(restrictedUndoBlocks);
 	}
 
 	private static void initPlayerEntityWeapons() {
@@ -554,87 +525,15 @@ public class CivSettings {
 	}
 	
 	private static void initRestrictedItems() {
-		// TODO make this configurable? 
-		restrictedItems.put(Material.FLINT_AND_STEEL, 0);
-		restrictedItems.put(Material.BUCKET, 0);
-		restrictedItems.put(Material.WATER_BUCKET, 0);
-		restrictedItems.put(Material.LAVA_BUCKET, 0);
-		restrictedItems.put(Material.CAKE_BLOCK, 0);
-		restrictedItems.put(Material.CAULDRON, 0);
-		restrictedItems.put(Material.DIODE, 0);
-		restrictedItems.put(Material.INK_SACK, 0);
-		restrictedItems.put(Material.ITEM_FRAME, 0);
-		restrictedItems.put(Material.PAINTING, 0);
-		restrictedItems.put(Material.SHEARS, 0);
-		restrictedItems.put(Material.STATIONARY_LAVA, 0);
-		restrictedItems.put(Material.STATIONARY_WATER, 0);
-		restrictedItems.put(Material.TNT, 0);
+		LegacyMaterials.fillRestrictedItems(restrictedItems);
 	}
 
 	private static void initSwitchItems() {
-		//TODO make this configurable?
-		switchItems.add(Material.ANVIL);
-		switchItems.add(Material.BEACON);
-		switchItems.add(Material.BREWING_STAND);
-		switchItems.add(Material.BURNING_FURNACE);
-		switchItems.add(Material.CAKE_BLOCK);
-		switchItems.add(Material.CAULDRON);
-		switchItems.add(Material.CHEST);
-		switchItems.add(Material.TRAPPED_CHEST);
-		switchItems.add(Material.COMMAND);
-		switchItems.add(Material.DIODE);
-		switchItems.add(Material.DIODE_BLOCK_OFF);
-		switchItems.add(Material.DIODE_BLOCK_ON);
-		switchItems.add(Material.DISPENSER);
-		switchItems.add(Material.FENCE_GATE);
-		switchItems.add(Material.FURNACE);
-		switchItems.add(Material.JUKEBOX);
-		switchItems.add(Material.LEVER);
-	//	switchItems.add(Material.LOCKED_CHEST);
-		switchItems.add(Material.STONE_BUTTON);
-		switchItems.add(Material.STONE_PLATE);
-		switchItems.add(Material.IRON_DOOR);
-		switchItems.add(Material.TNT);
-		switchItems.add(Material.TRAP_DOOR);
-		switchItems.add(Material.WOOD_DOOR);
-		switchItems.add(Material.WOODEN_DOOR);
-		switchItems.add(Material.WOOD_PLATE);
-		//switchItems.put(Material.WOOD_BUTTON, 0); //intentionally left out
-		
-		// 1.5 additions.
-		switchItems.add(Material.HOPPER);
-		switchItems.add(Material.HOPPER_MINECART);
-		switchItems.add(Material.DROPPER);
-		switchItems.add(Material.REDSTONE_COMPARATOR);
-		switchItems.add(Material.REDSTONE_COMPARATOR_ON);
-		switchItems.add(Material.REDSTONE_COMPARATOR_OFF);
-		switchItems.add(Material.TRAPPED_CHEST);
-		switchItems.add(Material.GOLD_PLATE);
-		switchItems.add(Material.IRON_PLATE);
-		switchItems.add(Material.IRON_TRAPDOOR);
-		
-		// 1.6 additions.
-		switchItems.add(Material.SPRUCE_DOOR);
-		switchItems.add(Material.BIRCH_DOOR);
-		switchItems.add(Material.JUNGLE_DOOR);
-		switchItems.add(Material.ACACIA_DOOR);
-		switchItems.add(Material.DARK_OAK_DOOR);
-		
-		// 1.7 additions
-		switchItems.add(Material.ACACIA_FENCE_GATE);
-		switchItems.add(Material.BIRCH_FENCE_GATE);
-		switchItems.add(Material.DARK_OAK_FENCE_GATE);
-		switchItems.add(Material.SPRUCE_FENCE_GATE);
-		switchItems.add(Material.JUNGLE_FENCE_GATE);
+		LegacyMaterials.fillSwitchItems(switchItems);
 	}
 	
 	private static void initBlockPlaceExceptions() {
-		/* These blocks can be placed regardless of permissions.
-		 * this is currently used only for blocks that are generated
-		 * by specific events such as portal or fire creation.
-		 */
-		blockPlaceExceptions.put(Material.FIRE, 0);
-		blockPlaceExceptions.put(Material.PORTAL, 0);
+		LegacyMaterials.fillBlockPlaceExceptions(blockPlaceExceptions);
 	}
 	
 	public static String getStringBase(String path) throws InvalidConfiguration {

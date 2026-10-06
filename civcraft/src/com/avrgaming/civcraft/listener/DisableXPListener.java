@@ -12,6 +12,7 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -52,7 +53,7 @@ public class DisableXPListener implements Listener {
 		
 		Block block = event.getClickedBlock();
 		
-		if (block.getType().equals(Material.ENCHANTMENT_TABLE)) {
+		if (LegacyMaterials.isEnchantingTable(block.getType())) {
 			CivMessage.sendError(event.getPlayer(), CivSettings.localize.localizedString("customItem_enchantTableDisabled"));
 			event.setCancelled(true);
 		}

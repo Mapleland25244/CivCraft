@@ -89,6 +89,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.compat.LegacyMaterials;
 import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
@@ -965,7 +966,7 @@ public class BlockListener implements Listener {
 				}
 			}
 
-			if (event.getItem().getType().equals(Material.INK_SACK)) {
+			if (LegacyMaterials.isDye(event.getItem().getType())) {
 				//if (event.getItem().getDurability() == 15) { 
 					event.setCancelled(true);
 					return;
@@ -1006,7 +1007,7 @@ public class BlockListener implements Listener {
 				}
 			}
 
-			if (event.getItem().getType().equals(Material.INK_SACK) && event.getItem().getDurability() == 15) {
+			if (LegacyMaterials.isBoneMeal(event.getItem())) {
 				Block clickedBlock = event.getClickedBlock();
 				if (ItemManager.getId(clickedBlock) == CivData.WHEAT || 
 					ItemManager.getId(clickedBlock) == CivData.CARROTS || 
@@ -1022,7 +1023,7 @@ public class BlockListener implements Listener {
 
 		// prevent players trampling crops
 		if ((event.getAction() == Action.PHYSICAL)) {
-			if ((soilBlock.getType() == Material.SOIL) || (soilBlock.getType() == Material.CROPS)) {
+			if (LegacyMaterials.isTrampleable(soilBlock.getType())) {
 				//CivLog.debug("no crop cancel.");
 				event.setCancelled(true);
 				return;	
@@ -1253,7 +1254,7 @@ public class BlockListener implements Listener {
 					}
 					break;
 				case PIG:
-					if (inHand.getType().equals(Material.CARROT_ITEM)) {
+					if (LegacyMaterials.isCarrotItem(inHand.getType())) {
 						denyBreeding = true;
 					}
 					break;
