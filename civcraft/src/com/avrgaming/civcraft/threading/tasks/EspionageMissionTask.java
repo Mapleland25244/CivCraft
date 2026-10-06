@@ -129,7 +129,14 @@ public class EspionageMissionTask implements Runnable {
 				if (target.processSpyExposure(resident)) {
 					CivMessage.global(CivColor.Yellow+CivSettings.localize.localizedString("var_espionage_missionFailedAlert",(CivColor.White+player.getName()),mission.name,target.getName()));
 					CivMessage.send(player, CivColor.Rose+CivSettings.localize.localizedString("espionage_missionFailed"));
-					Unit.removeUnit(player);
+					// Removing items changes the player's inventory, so it has to run on the main thread.
+					final Player failedSpy = player;
+					TaskMaster.syncTask(new Runnable() {
+						@Override
+						public void run() {
+							Unit.removeUnit(failedSpy);
+						}
+					});
 					resident.setPerformingMission(false);
 					return;
 				}

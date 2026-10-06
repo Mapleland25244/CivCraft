@@ -312,6 +312,8 @@ public final class CivCraft extends JavaPlugin {
 	public void onDisable() {
 		super.onDisable();
 		isDisable = true;
+		// Stop every timer and queued task first so nothing keeps queuing saves or touching state during shutdown.
+		TaskMaster.stopAll();
 		SQLUpdate.save();
 	}
 	

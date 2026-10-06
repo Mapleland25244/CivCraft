@@ -206,8 +206,15 @@ public class PlayerLoginAsyncTask implements Runnable {
 			for (SessionEntry e : entries) {
 				String[] split = e.value.split(":");
 				
-				BlockCoord coord = new BlockCoord(split[1]);
-				getPlayer().teleport(coord.getLocation());
+				final BlockCoord coord = new BlockCoord(split[1]);
+				final Player respawning = getPlayer();
+				// Teleporting touches the world, so it has to run on the main thread.
+				TaskMaster.syncTask(new Runnable() {
+					@Override
+					public void run() {
+						respawning.teleport(coord.getLocation());
+					}
+				});
 				deleted.add(e);
 			}
 			
