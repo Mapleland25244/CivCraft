@@ -271,7 +271,7 @@ classDiagram
 |---|---|
 | 引用 `org.bukkit` 的檔案 | **377 / 572（66%）** |
 | 主要使用的 API 區域 | `org.bukkit.event`(350 imports)、`entity`(249)、`inventory`(184)、`Location`(118)、`block`(105)、`Bukkit`(63)、`Material`(50)、`configuration`(46)、`command`(40) |
-| NMS / CraftBukkit（`v1_12_R1`）直接依賴 | **9 檔**：`ProjectileComponent`、`BlockListener`、`CannonProjectile`、`Stable`、`EntityProximity`、`PlayerBlockChangeUtil`、`gpl/AttributeUtil`、`gpl/HorseModifier`、`gpl/ImprovedOfflinePlayer` |
+| NMS / CraftBukkit（`v1_12_R1`）直接依賴 | **（R4 前的分析；R4 後只剩 `nms/v1_12_R1` 的 3 個檔案，見 [ROADMAP](ROADMAP.md)）9 檔**：`ProjectileComponent`、`BlockListener`、`CannonProjectile`、`Stable`、`EntityProximity`、`PlayerBlockChangeUtil`、`gpl/AttributeUtil`、`gpl/HorseModifier`、`gpl/ImprovedOfflinePlayer` |
 | 封裝點 | `util/BukkitObjects`（僅 8 檔使用，scheduler 包裝）；其餘大量直接 `Bukkit.` 呼叫（68 檔 / 138 次） |
 | 舊 API | 使用 numeric block ID（`CivData` 常數、`getTypeId`）、`Material.CROPS` / `REDSTONE_TORCH_OFF` 等 1.12 以前命名、`PlayerPickupItemEvent` 等 → **升級到 1.13+ 需要大規模改寫** |
 | 領域物件直接持有 Bukkit 型別 | `Town`、`Resident`、`Buildable` 的方法簽章含 `Player` / `Location` / `ItemStack` / `Material`，領域邏輯無法脫離 Bukkit 單獨測試 |

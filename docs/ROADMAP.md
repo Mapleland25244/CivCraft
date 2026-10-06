@@ -1,6 +1,6 @@
 # CivCraft 重構與升級路線圖
 
-> 更新：2026-10-06 ｜ 狀態：R2、R3 完成，下一步 R4
+> 更新：2026-10-06 ｜ 狀態：R2、R3 完成，R4 程式完成、部分驗證
 > 依據：[ARCHITECTURE](ARCHITECTURE.md)（現況分析）、[基準線](testing/00-baseline-1.12.2.md)
 > 本檔記錄決策與流程；執行結果記在 [測試紀錄](testing/README.md)。
 
@@ -49,7 +49,7 @@
 | R1 | 外部插件整合層（`integration` 套件） | M | 完成（[Phase 1 紀錄](testing/01-phase1-integration.md)） |
 | **R2** | **方塊／物品存取層：所有舊 API（數字 ID、`MaterialData`、舊 `Material` 常數、`getDurability` 當 data 用）只留在 `ItemManager` 邊界** | **L** | **完成**（見 §4；紀錄：[02-r2-legacy-api](testing/02-r2-legacy-api.md)） |
 | **R3** | **排程與生命週期：`TaskMaster` 介面化、修 `cancelTimer`、`onDisable` 取消任務、審計 async 是否碰世界** | **M** | **完成（已驗證）**；未觸發：重生傳送、間諜失敗、產出；擱置：Roman Barracks 箱子朝向與拆除破損，未歸因（紀錄：[03-r3-scheduling](testing/03-r3-scheduling.md)） |
-| R4 | NMS 與 NBT 隔離：9 個 NMS 檔進 `nms`，`AttributeUtil` 包一層並保留舊 NBT 讀取 | M | 待做 |
+| **R4** | **NMS 與 NBT 隔離：伺服器內部類別只留在 `nms` 套件（`NmsAdapter`／`ItemNbt`／`HorseAccess`，每版一個 adapter）；`AttributeUtil`、`HorseModifier` 成為外殼，NBT 鍵逐字保留；`tools/check-nms.sh` 接入提交前檢查** | **M** | **程式完成，部分驗證**：啟動與物品 NBT（4.1、4.2、4.3、4.5）PASS；Stable 馬被既有 bug 擋住（日後獨立修復）；牧場、塔、砲、Ruffian、聊天物品提示未觸發（紀錄：[04-r4-nms](testing/04-r4-nms.md)） |
 | R5 | 指令層：頂層指令每次執行建新實例、方法查找快取並於啟動時檢查 `_cmd`、補上真正的 `TabCompleter` | S–M | 待做 |
 | R6 | 持久化：收斂 12 個直接 JDBC 的檔案、`SQLUpdate` 去重、盤點 DB 內序列化的物品 | L | 待做 |
 | R7 | `CivSettings` 型別化門面 | L | 待做 |
@@ -116,7 +116,7 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | durability-as-data（`get/setDurability`） | 27 | 3 | 剩 `gpl/InventorySerializer`（物品序列化），併入 R6 |
 | int-item-stack（`new ItemStack(int,…)`） | 3 | **0** | 完成 |
 | legacy-material-const（舊命名 `Material` 常數） | 45 | **0** | 完成（新增 `compat/LegacyMaterials`；邊界擴大為 `ItemManager` 與 `compat/`） |
-| material-getid（`Material#getId`） | — | 1 | 併入 R4（`gpl/ImprovedOfflinePlayer`，屬 NMS） |
+| material-getid（`Material#getId`） | — | **0** | 完成（R4 刪除未使用的 `gpl/ImprovedOfflinePlayer`） |
 
 檢查腳本的限制：grep 看不到型別，`sb`、`bs`、`nextBs`、`nextBlock`、`commandBlock` 等慣用變數名視為 CivCraft 自己的 `SimpleBlock`／`BlockSnapshot` 而略過；若 Bukkit 物件剛好用這些名字會被漏掉。
 
