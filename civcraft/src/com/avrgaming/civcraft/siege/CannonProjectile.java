@@ -32,7 +32,6 @@ import com.avrgaming.civcraft.util.EntityProximity;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.WarRegen;
 
-import net.minecraft.server.v1_12_R1.EntityPlayer;
 
 public class CannonProjectile {
 	public Cannon cannon;
@@ -164,7 +163,7 @@ public class CannonProjectile {
 		}
 		
 		/* Instantly kill any players caught in the blast. */
-		LinkedList<Entity> players = EntityProximity.getNearbyEntities(null, loc, yield, EntityPlayer.class);
+		LinkedList<Entity> players = EntityProximity.getNearbyEntities(null, loc, yield, Player.class);
 		for (Entity e : players) {
 			Player player = (Player)e;
 			player.damage(playerDamage);

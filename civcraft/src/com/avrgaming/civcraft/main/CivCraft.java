@@ -75,6 +75,7 @@ import com.avrgaming.civcraft.loreenhancements.LoreEnhancementArenaItem;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.integration.Integrations;
+import com.avrgaming.civcraft.nms.Nms;
 import com.avrgaming.civcraft.populators.MobSpawnerPopulator;
 import com.avrgaming.civcraft.populators.TradeGoodPopulator;
 import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
@@ -246,6 +247,15 @@ public final class CivCraft extends JavaPlugin {
 		
 		CivLog.init(this);
 		BukkitObjects.initialize(this);
+
+		try {
+			Nms.init();
+		} catch (IllegalStateException e) {
+			CivLog.error(e.getMessage());
+			setError(true);
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		
 		//Load World Populators
 		BukkitObjects.getWorlds().get(0).getPopulators().add(new TradeGoodPopulator());

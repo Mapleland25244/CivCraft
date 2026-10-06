@@ -19,10 +19,8 @@
 package com.avrgaming.civcraft.listener;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -31,9 +29,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
@@ -68,7 +63,6 @@ import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
@@ -101,6 +95,7 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
+import com.avrgaming.civcraft.nms.Nms;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ControlPoint;
 import com.avrgaming.civcraft.object.ProtectedBlock;
@@ -137,13 +132,6 @@ import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarRegen;
 
 import gpl.HorseModifier;
-import net.minecraft.server.v1_12_R1.AttributeInstance;
-import net.minecraft.server.v1_12_R1.AxisAlignedBB;
-import net.minecraft.server.v1_12_R1.DamageSource;
-import net.minecraft.server.v1_12_R1.EntityInsentient;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.GenericAttributes;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 public class BlockListener implements Listener {
 
@@ -1290,9 +1278,7 @@ public class BlockListener implements Listener {
 						event.setCancelled(true);
 					} else {
 							int loveTicks;
-							NBTTagCompound tag = new NBTTagCompound();
-							((CraftEntity)event.getRightClicked()).getHandle().c(tag);
-							loveTicks = tag.getInt("InLove");
+							loveTicks = Nms.get().getLoveTicks(event.getRightClicked());
 
 							if (loveTicks == 0) {	
 								if(!pasture.processMobBreed(event.getPlayer(), event.getRightClicked().getType())) {
@@ -1499,11 +1485,6 @@ public class BlockListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			NBTTagCompound compound = new NBTTagCompound();
-			if (compound.getBoolean("IsChickenJockey")) {
-				event.setCancelled(true);
-				return;			
-			}
 		}
 
 		if (event.getEntity().getType().equals(EntityType.IRON_GOLEM) &&
@@ -1671,10 +1652,8 @@ public class BlockListener implements Listener {
 				entityName = shooter.getCustomName();
 			}
 			if (entityName != null && entityName.endsWith(" Ruffian")) {
-				EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) shooter).getHandle();
-		    	AttributeInstance attribute = nmsEntity.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE);
-		    	Double damage = attribute.getValue();
-				
+				Double damage = Nms.get().getAttackDamage(shooter);
+		    			    					
 				class RuffianProjectile {
 					Location loc;
 					Location target;
@@ -1744,24 +1723,7 @@ public class BlockListener implements Listener {
 					
 					@SuppressWarnings("deprecation")
 					private void damagePlayers(Location loc, int radius) {
-						double x = loc.getX()+0.5;
-						double y = loc.getY()+0.5;
-						double z = loc.getZ()+0.5;
-						double r = (double)radius;
-						
-						CraftWorld craftWorld = (CraftWorld)attacker.getWorld();
-						
-						AxisAlignedBB bb = AxisAlignedBB(x-r, y-r, z-r, x+r, y+r, z+r);
-						
-						List<net.minecraft.server.v1_12_R1.Entity> entities = craftWorld.getHandle().getEntities(((CraftEntity)attacker).getHandle(), bb);
-						
-						for (net.minecraft.server.v1_12_R1.Entity e : entities) {
-							if (e instanceof EntityPlayer) {
-								EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, ((EntityPlayer)e).getBukkitEntity(), DamageCause.ENTITY_ATTACK, damage);
-								Bukkit.getServer().getPluginManager().callEvent(event);
-								e.damageEntity(DamageSource.GENERIC, (float) event.getDamage());
-							}
-						}
+						Nms.get().damagePlayersAround(attacker, loc, (double)radius, damage);
 						
 					}
 					
@@ -1780,12 +1742,6 @@ public class BlockListener implements Listener {
 //							}
 //						}
 //					}
-
-					private AxisAlignedBB AxisAlignedBB(double d, double e,
-							double f, double g, double h, double i) {
-						 return new AxisAlignedBB(d, e, f, g, h, i);
-//						return null;
-					}
 
 					private void launchExplodeFirework(Location loc) {
 						FireworkEffect fe = FireworkEffect.builder().withColor(Color.ORANGE).withColor(Color.YELLOW).flicker(true).with(Type.BURST).build();		

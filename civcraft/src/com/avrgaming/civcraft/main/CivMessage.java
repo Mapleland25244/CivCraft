@@ -39,7 +39,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.Reflection;
+import com.avrgaming.civcraft.nms.Nms;
 import com.avrgaming.civcraft.integration.Integrations;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -137,8 +137,7 @@ public class CivMessage {
 	  {
 	    try
 	    {
-	      Object nmsItem = Reflection.getMethod(Reflection.getOBCClass("inventory.CraftItemStack"), "asNMSCopy", new Class[] { ItemStack.class }).invoke(null, new Object[] { itemStack });
-	      return (Reflection.getMethod(Reflection.getNMSClass("ItemStack"), "save", new Class[] { Reflection.getNMSClass("NBTTagCompound") }).invoke(nmsItem, new Object[] { Reflection.getNMSClass("NBTTagCompound").newInstance() }).toString());
+	      return Nms.get().itemToJson(itemStack);
 	    }
 	    catch (Exception e)
 	    {

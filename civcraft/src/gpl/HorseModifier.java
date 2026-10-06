@@ -1,16 +1,11 @@
 package gpl;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,11 +13,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivLog;
-
-import net.minecraft.server.v1_12_R1.AttributeInstance;
-import net.minecraft.server.v1_12_R1.AttributeModifier;
-import net.minecraft.server.v1_12_R1.EntityInsentient;
-import net.minecraft.server.v1_12_R1.GenericAttributes;
+import com.avrgaming.civcraft.nms.HorseAccess;
+import com.avrgaming.civcraft.nms.Nms;
  
 /**
 * HorseModifier v1.1
@@ -30,10 +22,11 @@ import net.minecraft.server.v1_12_R1.GenericAttributes;
 * You are free to use it, modify it and redistribute it under the condition to give credit to me
 *
 * @author DarkBlade12
+*
+* The server-specific part (NBT through reflection, attribute modifiers) now lives behind HorseAccess in the nms package.
 */
 public class HorseModifier {
-    private Object entityHorse;
-    private Object nbtTagCompound;
+    private HorseAccess access;
     
     public static String HORSE_META = "civcrafthorse";
     private static final UUID movementSpeedUID = UUID.fromString("206a89dc-ae78-4c4d-b42c-3b31db3f5a7c");
@@ -45,55 +38,32 @@ public class HorseModifier {
         if (!HorseModifier.isHorse(horse)) {
             throw new IllegalArgumentException("Entity has to be a horse!");
         }
-        try {
-            this.entityHorse = ReflectionUtil.getMethod("getHandle", horse.getClass(), 0).invoke(horse);
-            this.nbtTagCompound = NBTUtil.getNBTTagCompound(entityHorse);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.access = Nms.get().wrapHorse(horse);
     }
  
     /**
     * Creates a new instance of the HorseModifier; This constructor is only used for the static spawn method
     */
-    private HorseModifier(Object entityHorse) {
-        this.entityHorse = entityHorse;
-        try {
-            this.nbtTagCompound = NBTUtil.getNBTTagCompound(entityHorse);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private HorseModifier(HorseAccess access) {
+        this.access = access;
     }
  
     /**
     * Spawns a horse at a given location
     */
     public static HorseModifier spawn(Location loc) {
-        World w = loc.getWorld();
-        try {
-            Object worldServer = ReflectionUtil.getMethod("getHandle", w.getClass(), 0).invoke(w);
-            Object entityHorse = ReflectionUtil.getClass("EntityHorse", worldServer);
-            ReflectionUtil.getMethod("setPosition", entityHorse.getClass(), 3).invoke(entityHorse, loc.getX(), loc.getY(), loc.getZ());
-            ReflectionUtil.getMethod("addEntity", worldServer.getClass(), 1).invoke(worldServer, entityHorse);
-            return new HorseModifier(entityHorse);
-        } catch (Exception e) {
-            e.printStackTrace();
+        HorseAccess access = Nms.get().spawnHorse(loc);
+        if (access == null) {
             return null;
         }
+        return new HorseModifier(access);
     }
  
     /**
     * Checks if an entity is a horse
     */
     public static boolean isHorse(LivingEntity le) {
-        try {
-            Object entityLiving = ReflectionUtil.getMethod("getHandle", le.getClass(), 0).invoke(le);
-            Object nbtTagCompound = NBTUtil.getNBTTagCompound(entityLiving);
-            return NBTUtil.hasKeys(nbtTagCompound, new String[] { "Bred", "EatingHaystack", "Tame" , "Temper", "Variant" });
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return Nms.get().isHorse(le);
     }
  
     
@@ -102,13 +72,7 @@ public class HorseModifier {
     		return;
     	}
     	
-    	EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) entity).getHandle();
-    	AttributeInstance attributes = nmsEntity.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-    	AttributeModifier modifier = new AttributeModifier(movementSpeedUID, "civcraft horse movement speed", amount, 0);
-    	attributes.b(modifier); //remove the modifier, adding a duplicate causes errors
-    	attributes.a(modifier); //add the modifier
-  
-    	//done??
+    	Nms.get().setHorseSpeedModifier(entity, movementSpeedUID, "civcraft horse movement speed", amount);
     }
     
     public static void setCivCraftHorse(LivingEntity entity) {
@@ -126,194 +90,147 @@ public class HorseModifier {
     		return false;
     	}
     	
-    	EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) entity).getHandle();
-    	AttributeInstance attributes = nmsEntity.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-    	
-    	if (attributes.a(movementSpeedUID) == null) {
-    		return false;
-    	}
-    		
-    	return true;
-    	
-    //	AttributeModifier modifier = new AttributeModifier(movementSpeedUID, "civcraft horse movement speed", amount, 1);
-    	//attributes.b(modifier); //remove the modifier, adding a duplicate causes errors
-    //	attributes.a(modifier); //add the modifier
+    	return Nms.get().hasHorseSpeedModifier(entity, movementSpeedUID);
     }
     
     /**
     * Changes the type of the horse
     */
     public void setType(HorseType type) {
-        setHorseValue("Type", type.getId());
+        access.setInt("Type", type.getId());
     }
  
     /**
     * Changes whether the horse is chested or not (only for donkeys and mules)
     */
     public void setChested(boolean chested) {
-        setHorseValue("ChestedHorse", chested);
+        access.setBoolean("ChestedHorse", chested);
     }
  
     /**
     * Changes whether the horse is eating or not
     */
     public void setEating(boolean eating) {
-        setHorseValue("EatingHaystack", eating);
+        access.setBoolean("EatingHaystack", eating);
     }
  
     /**
     * Changes whether the horse was bred or not
     */
     public void setBred(boolean bred) {
-        setHorseValue("Bred", bred);
+        access.setBoolean("Bred", bred);
     }
  
     /**
     * Changes the color variant of the horse (only for normal horses)
     */
     public void setVariant(HorseVariant variant) {
-        setHorseValue("Variant", variant.getId());
+        access.setInt("Variant", variant.getId());
     }
  
     /**
     * Changes the temper of the horse
     */
     public void setTemper(int temper) {
-        setHorseValue("Temper", temper);
+        access.setInt("Temper", temper);
     }
  
     /**
     * Changes whether the horse is tamed or not
     */
     public void setTamed(boolean tamed) {
-        setHorseValue("Tame", tamed);
+        access.setBoolean("Tame", tamed);
     }
  
     /**
     * Changes whether the horse is saddled or not
     */
     public void setSaddled(boolean saddled) {
-        setHorseValue("Saddle", saddled);
+        access.setBoolean("Saddle", saddled);
     }
  
     /**
     * Sets the armor item of the horse (only for normal horses)
     */
     public void setArmorItem(ItemStack i) {
-        if (i != null) {
-            try {
-                Object itemTag = ReflectionUtil.getClass("NBTTagCompound", "ArmorItem");
-                Object itemStack = ReflectionUtil.getMethod("asNMSCopy", Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".inventory.CraftItemStack"), 1).invoke(this, i);
-                ReflectionUtil.getMethod("save", itemStack.getClass(), 1).invoke(itemStack, itemTag);
-                setHorseValue("ArmorItem", itemTag);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            setHorseValue("ArmorItem", null);
-        }
+        access.setArmorItem(i);
     }
  
     /**
     * Returns the type of the horse
     */
     public HorseType getType() {
-        return HorseType.fromId((int) NBTUtil.getValue(nbtTagCompound, Integer.class, "Type"));
+        return HorseType.fromId(access.getInt("Type"));
     }
  
     /**
     * Returns whether the horse is chested or not
     */
     public boolean isChested() {
-        return (boolean) NBTUtil.getValue(nbtTagCompound, Boolean.class, "ChestedHorse");
+        return access.getBoolean("ChestedHorse");
     }
  
     /**
     * Returns whether the horse is eating or not
     */
     public boolean isEating() {
-        return (boolean) NBTUtil.getValue(nbtTagCompound, Boolean.class, "EatingHaystack");
+        return access.getBoolean("EatingHaystack");
     }
  
     /**
     * Returns whether the horse was bred or not
     */
     public boolean isBred() {
-        return (boolean) NBTUtil.getValue(nbtTagCompound, Boolean.class, "Bred");
+        return access.getBoolean("Bred");
     }
  
     /**
     * Returns the variant of the horse
     */
     public HorseVariant getVariant() {
-        return HorseVariant.fromId((int) NBTUtil.getValue(nbtTagCompound, Integer.class, "Variant"));
+        return HorseVariant.fromId(access.getInt("Variant"));
     }
  
     /**
     * Returns the temper of the horse
     */
     public int getTemper() {
-        return (int) NBTUtil.getValue(nbtTagCompound, Integer.class, "Temper");
+        return access.getInt("Temper");
     }
  
     /**
     * Returns whether the horse is tamed or not
     */
     public boolean isTamed() {
-        return (boolean) NBTUtil.getValue(nbtTagCompound, Boolean.class, "Tame");
+        return access.getBoolean("Tame");
     }
  
     /**
     * Returns whether the horse is saddled or not
     */
     public boolean isSaddled() {
-        return (boolean) NBTUtil.getValue(nbtTagCompound, Boolean.class, "Saddle");
+        return access.getBoolean("Saddle");
     }
  
     /**
     * Returns the armor item of the horse
     */
     public ItemStack getArmorItem() {
-        try {
-            Object itemTag = NBTUtil.getValue(nbtTagCompound, nbtTagCompound.getClass(), "ArmorItem");
-            Object itemStack = ReflectionUtil.getMethod("createStack", Class.forName(ReflectionUtil.getPackageName() + ".ItemStack"), 1).invoke(this, itemTag);
-            return (ItemStack) ReflectionUtil.getMethod("asCraftMirror", Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".inventory.CraftItemStack"), 1).invoke(this, itemStack);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return access.getArmorItem();
     }
  
     /**
     * Opens the inventory of the horse for a player (only for tamed horses)
     */
     public void openInventory(Player p) {
-        try {
-            Object entityPlayer = ReflectionUtil.getMethod("getHandle", p.getClass(), 0).invoke(p);
-            ReflectionUtil.getMethod("f", entityHorse.getClass(), 1).invoke(entityHorse, entityPlayer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        access.openInventory(p);
     }
  
     /**
     * Returns the horse entity
     */
     public LivingEntity getHorse() {
-        try {
-            return (LivingEntity) ReflectionUtil.getMethod("getBukkitEntity", entityHorse.getClass(), 0).invoke(entityHorse);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
- 
-    /**
-    * Changes a value in the NBTTagCompound and updates it to the horse
-    */
-    private void setHorseValue(String key, Object value) {
-        NBTUtil.setValue(nbtTagCompound, key, value);
-        NBTUtil.updateNBTTagCompound(entityHorse, nbtTagCompound);
+        return access.getHorse();
     }
  
     public enum HorseType {
@@ -411,115 +328,6 @@ public class HorseModifier {
  
         public static HorseVariant fromId(int id) {
             return ID_MAP.get(id);
-        }
-    }
- 
-    private static class NBTUtil {
-        public static Object getNBTTagCompound(Object entity) {
-            try {
-                Object nbtTagCompound = ReflectionUtil.getClass("NBTTagCompound");
-                for (Method m : entity.getClass().getMethods()) {
-                    Class<?>[] pt = m.getParameterTypes();
-                    if (m.getName().equals("b") && pt.length == 1 && pt[0].getName().contains("NBTTagCompound")) {
-                        m.invoke(entity, nbtTagCompound);
-                    }
-                }
-                return nbtTagCompound;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
- 
-        public static void updateNBTTagCompound(Object entity, Object nbtTagCompound) {
-            try {
-                for (Method m : entity.getClass().getMethods()) {
-                    Class<?>[] pt = m.getParameterTypes();
-                    if (m.getName().equals("a") && pt.length == 1 && pt[0].getName().contains("NBTTagCompound")) {
-                        m.invoke(entity, nbtTagCompound);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
- 
-        public static void setValue(Object nbtTagCompound, String key, Object value) {
-            try {
-                if (value instanceof Integer) {
-                    ReflectionUtil.getMethod("setInt", nbtTagCompound.getClass(), 2).invoke(nbtTagCompound, key, (Integer) value);
-                    return;
-                } else if (value instanceof Boolean) {
-                    ReflectionUtil.getMethod("setBoolean", nbtTagCompound.getClass(), 2).invoke(nbtTagCompound, key, (Boolean) value);
-                    return;
-                } else {
-                    ReflectionUtil.getMethod("set", nbtTagCompound.getClass(), 2).invoke(nbtTagCompound, key, value);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
- 
-        public static Object getValue(Object nbtTagCompound, Class<?> c, String key) {
-            try {
-                if (c == Integer.class) {
-                    return ReflectionUtil.getMethod("getInt", nbtTagCompound.getClass(), 1).invoke(nbtTagCompound, key);
-                } else if (c == Boolean.class) {
-                    return ReflectionUtil.getMethod("getBoolean", nbtTagCompound.getClass(), 1).invoke(nbtTagCompound, key);
-                } else {
-                    return ReflectionUtil.getMethod("getCompound", nbtTagCompound.getClass(), 1).invoke(nbtTagCompound, key);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
- 
-        public static boolean hasKey(Object nbtTagCompound, String key) {
-            try {
-                return (boolean) ReflectionUtil.getMethod("hasKey", nbtTagCompound.getClass(), 1).invoke(nbtTagCompound, key);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
- 
-        public static boolean hasKeys(Object nbtTagCompound, String[] keys) {
-            for (String key : keys) {
-                if (!hasKey(nbtTagCompound, key)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
- 
-    private static class ReflectionUtil {
-        public static Object getClass(String name, Object... args) throws Exception {
-            Class<?> c = Class.forName(ReflectionUtil.getPackageName() + "." + name);
-            int params = 0;
-            if (args != null) {
-                params = args.length;
-            }
-            for (Constructor<?> co : c.getConstructors()) {
-                if (co.getParameterTypes().length == params) {
-                    return co.newInstance(args);
-                }
-            }
-            return null;
-        }
- 
-        public static Method getMethod(String name, Class<?> c, int params) {
-            for (Method m : c.getMethods()) {
-                if (m.getName().equals(name) && m.getParameterTypes().length == params) {
-                    return m;
-                }
-            }
-            return null;
-        }
- 
-        public static String getPackageName() {
-            return "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         }
     }
 }
