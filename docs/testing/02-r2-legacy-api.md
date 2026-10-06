@@ -1,6 +1,6 @@
 # CivCraft R2（方塊／物品存取層）測試紀錄
 
-> 更新：2026-10-06 ｜ 範圍：舊方塊／物品 API 收進 `ItemManager` 與 `compat/LegacyMaterials`（R2.1–R2.6） ｜ 狀態：R2.1–R2.6 已驗證（R2.5 的 Market/Grocer 僅編譯確認）
+> 更新：2026-10-06 ｜ 範圍：舊方塊／物品 API 收進 `ItemManager` 與 `compat/LegacyMaterials`（R2.1–R2.7） ｜ 狀態：R2 完成，R2.1–R2.7 已驗證（R2.5 的 Market/Grocer 僅編譯確認）
 > 對照：[基準線](00-baseline-1.12.2.md)。本檔只記錄改動後的結果，不覆蓋基準線。
 > 慣例與索引：[README](README.md) ｜ 設計：[ROADMAP §4](../ROADMAP.md)
 
@@ -160,5 +160,5 @@
 
 1. 確認 hammer rate 已還原為 261.375（`/town info` 的 Hammers）。
 2. R2-C（護甲發射器）、R2-Q（Market／Grocer 購買、冶煉產出）、R2-R（展示框）、R2-L（戰爭中紅石火把限制）：僅編譯確認，待有場景再補。
-3. R2.7：把 `tools/check-legacy-api.sh`（舊 API 棘輪）與 `tools/scan-templates.sh --check`（藍圖盤點）納入提交前檢查；剩餘 `gpl/InventorySerializer` 的 3 處 `get/setDurability` 併入 R6。
+3. R2.7 已完成（見 testing/README §6）；剩餘 `gpl/InventorySerializer` 的 3 處 `get/setDurability` 併入 R6，`gpl/ImprovedOfflinePlayer` 的 1 處 `Material#getId` 併入 R4。
 4. 下一階段 R3（排程與生命週期）；U1 的「舊 id:data → 新方塊」對照表以 `tools/template-blocks-baseline.txt` 的 708 組為涵蓋清單。

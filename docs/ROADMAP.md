@@ -1,6 +1,6 @@
 # CivCraft 重構與升級路線圖
 
-> 更新：2026-10-06 ｜ 狀態：進行中（R2.6 完成，下一步 R2.7）
+> 更新：2026-10-06 ｜ 狀態：R2 完成（R2.7 完成），下一步 R3
 > 依據：[ARCHITECTURE](ARCHITECTURE.md)（現況分析）、[基準線](testing/00-baseline-1.12.2.md)
 > 本檔記錄決策與流程；執行結果記在 [測試紀錄](testing/README.md)。
 
@@ -47,7 +47,7 @@
 |---|---|---|---|
 | R0 | 可重現的 build、基準線 [基準線](testing/00-baseline-1.12.2.md) | S | 完成 |
 | R1 | 外部插件整合層（`integration` 套件） | M | 完成（[Phase 1 紀錄](testing/01-phase1-integration.md)） |
-| **R2** | **方塊／物品存取層：所有舊 API（數字 ID、`MaterialData`、舊 `Material` 常數、`getDurability` 當 data 用）只留在 `ItemManager` 邊界** | **L** | **進行中**（見 §4；紀錄：[02-r2-legacy-api](testing/02-r2-legacy-api.md)） |
+| **R2** | **方塊／物品存取層：所有舊 API（數字 ID、`MaterialData`、舊 `Material` 常數、`getDurability` 當 data 用）只留在 `ItemManager` 邊界** | **L** | **完成**（見 §4；紀錄：[02-r2-legacy-api](testing/02-r2-legacy-api.md)） |
 | R3 | 排程與生命週期：`TaskMaster` 介面化、修 `cancelTimer`、`onDisable` 取消任務、審計 async 是否碰世界 | M | 待做 |
 | R4 | NMS 與 NBT 隔離：9 個 NMS 檔進 `nms`，`AttributeUtil` 包一層並保留舊 NBT 讀取 | M | 待做 |
 | R5 | 指令層：頂層指令每次執行建新實例、方法查找快取並於啟動時檢查 `_cmd`、補上真正的 `TabCompleter` | S–M | 待做 |
@@ -103,7 +103,7 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | R2.4 | 舊命名 `Material` 常數改為透過 `compat/LegacyMaterials`（語意判斷與設定集合）取得 | javac；對應功能測項（**完成，待伺服器驗證**） |
 | R2.5 | `get/setDurability` 分成「損耗」（`ItemManager.getDamage/setDamage`）與「變體」（`LegacyMaterials` 的語意判斷）；`new ItemStack(int,…)` 改走 `ItemManager.createItemStack` | 自訂物品、耐久、附魔（**完成，待伺服器驗證**） |
 | R2.6 | 藍圖 id:data：確認解析與貼上已全部走 `ItemManager`／`SimpleBlock`（無需改程式）；新增離線盤點 `tools/scan-templates.sh` 與基準 `tools/template-blocks-baseline.txt`（**完成**，見 §4.5） | 2.8.8、2.3.1 |
-| R2.7 | 腳本棘輪設為 0 洩漏，寫入 CI／提交前檢查 | 腳本 |
+| R2.7 | 棘輪歸零（剩 `gpl` 的 4 處併入 R4／R6），並把兩支檢查腳本接上提交前檢查（`tools/pre-commit-check.sh`、`.githooks/pre-commit`；`.gitattributes` 固定腳本為 LF）（**完成**） | 腳本；故意加入舊 API 會被擋 |
 
 每個子步驟獨立 commit，**行為不變**，編譯通過並在伺服器上跑相關基準線測項。
 

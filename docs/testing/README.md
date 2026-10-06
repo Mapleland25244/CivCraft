@@ -8,6 +8,7 @@
 - [3. 檔案格式](#3-檔案格式)
 - [4. 結果欄位](#4-結果欄位)
 - [5. 新增一份紀錄](#5-新增一份紀錄)
+- [6. 提交前檢查](#6-提交前檢查)
 
 ---
 
@@ -74,3 +75,20 @@
 3. 測前備份 `civ_game`，並記下 `/res info`、`/town info`、`/civ info` 的金額。
 4. 一律 `stop` 後重啟，不使用 `/reload`。
 5. 在上面的索引表加一列，並在 ROADMAP 對應步驟連結過去。
+
+---
+
+## 6. 提交前檢查
+
+兩支檢查腳本由 `tools/pre-commit-check.sh` 統一呼叫，依暫存的檔案決定要跑哪些：
+
+| 暫存的檔案 | 執行的檢查 | 耗時 |
+|---|---|---|
+| `civcraft/src/**/*.java`、`tools/check-legacy-api.sh`、`tools/legacy-api-baseline.txt` | `tools/check-legacy-api.sh`：舊（1.13 以前）API 棘輪，數字只能降、不能升 | 數秒 |
+| `civcraft_data/templates/**`、`tools/ScanTemplates.java`、`tools/scan-templates.sh`、`tools/template-blocks-baseline.txt` | `tools/scan-templates.sh --check`：藍圖的 `id:data` 組合不得超出基準 | 約 1 分鐘 |
+
+- 全部執行：`bash tools/pre-commit-check.sh --all`。
+- 啟用 hook（每個 clone 一次）：`bash tools/install-hooks.sh`（設定 `core.hooksPath = .githooks`）。復原：`git config --unset core.hooksPath`。略過一次：`git commit --no-verify`。
+- 失敗時：修掉問題；若改動是有意的，更新基準：`tools/check-legacy-api.sh --write-baseline` 或 `tools/scan-templates.sh --write`。
+- 某類別數字下降時腳本會印出提示，請執行 `--write-baseline` 把進度鎖住。
+- `.gitattributes` 把 `*.sh`、`.githooks/*`、`tools/*.txt`、`tools/*.java` 固定為 LF；Windows 預設的 `core.autocrlf=true` 會把它們轉成 CRLF，bash 就無法執行。
