@@ -1,6 +1,6 @@
 # CivCraft R2（方塊／物品存取層）測試紀錄
 
-> 更新：2026-10-06 ｜ 範圍：舊方塊／物品 API 收進 `ItemManager` 與 `compat/LegacyMaterials`（R2.1–R2.5） ｜ 狀態：R2.1–R2.4 已驗證，R2.5 待驗證
+> 更新：2026-10-06 ｜ 範圍：舊方塊／物品 API 收進 `ItemManager` 與 `compat/LegacyMaterials`（R2.1–R2.6） ｜ 狀態：R2.1–R2.6 已驗證（R2.5 的 Market/Grocer 僅編譯確認）
 > 對照：[基準線](00-baseline-1.12.2.md)。本檔只記錄改動後的結果，不覆蓋基準線。
 > 慣例與索引：[README](README.md) ｜ 設計：[ROADMAP §4](../ROADMAP.md)
 
@@ -65,6 +65,12 @@
 - 剩餘 3 處 `get/setDurability` 在 `gpl/InventorySerializer`（物品序列化），併入 R6。
 - 讀碼備註：藥水在 1.9 之後改用 PotionMeta 存類型，舊的「以 damage 判斷藥水」在 1.12.2 上**可能本來就失效**（推測，未驗證）；本次只保持原判斷，不改行為。
 
+**R2.6（藍圖資料盤點，沒有 Java 改動）**
+- 新增 `tools/ScanTemplates.java`、`tools/scan-templates.sh`、基準 `tools/template-blocks-baseline.txt`：離線掃描 `civcraft_data/templates` 全部 `.def`，統計 `id:data` 組合並對照 1.12.2 的 `Material`。
+- 實測：1274 檔、47,440,440 個方塊行、36,801 個指令行、708 組 `id:data`、158 個 id；座標超界、id 超出 0–255、data 超出 0–15、格式錯誤、找不到 `Material` 的 id 全為 0。
+- `Template`/`TemplateStream` 的解析與貼上本來就走 `SimpleBlock`/`ItemManager`，檢查腳本顯示它們沒有舊 API 洩漏，所以這一步只加工具、不改程式。
+- 用途：U1 的「舊 id:data → 新方塊」對照表必須涵蓋這 708 組；`tools/scan-templates.sh --check` 會在新藍圖帶入基準以外的組合時失敗。
+
 **棘輪（`tools/legacy-api-baseline.txt`）**
 | 類別 | 起始 | 目前 |
 |---|---:|---:|
@@ -118,6 +124,7 @@
 | R2-P | 變體：藥水判斷（隱形藥水、基底藥水） | 待測（可能原本即失效） |
 | R2-Q | 數字 ID 物品：Market 看板購買、Grocer 購買、冶煉產出（`ConfigMarketItem`、`Resident.giveItem`、`Blacksmith`） | 待測（需先蓋對應建築，目前僅編譯確認） |
 | R2-R | 展示框放物品（`ItemFrameStorage.copyWithAmount`） | 待測（僅編譯確認） |
+| R2-S | `tools/scan-templates.sh --check`（離線，約 1 分鐘） | PASS（708 組、無異常） |
 
 **實測紀錄**
 - R2-A：站在空曠平地執行 `/dbg createtradegood good_cotton`（id 見 `civcraft/data/goods.yml`；不帶 id 只會回 `Enter trade goodie id`，不會列清單）。預期貼牆看板、朝向正常、第 3 行為商品名；失敗：朝向錯誤或 `ClassCastException`。
@@ -151,9 +158,7 @@
 
 ## 5. 尚未完成
 
-1. 確認 hammer rate 已還原為 261.375；R2-C 發射器可略過（僅編譯與日誌覆蓋）。
-2. R2.4 驗證完成，待 commit：`refactor(compat): move pre-1.13 Material names into LegacyMaterials`。
-2. 驗證通過後 commit：`refactor(compat): route legacy block/item APIs through ItemManager`。
-3. R2.4：舊命名 `Material` 常數（主要在 `CivSettings` 的受限清單）。
-4. R2.5：`get/setDurability` 與 `new ItemStack(int, …)`。
-5. R2.6、R2.7：`Template`／`TemplateStream` 解析、棘輪歸零。
+1. 確認 hammer rate 已還原為 261.375（`/town info` 的 Hammers）。
+2. R2-C（護甲發射器）、R2-Q（Market／Grocer 購買、冶煉產出）、R2-R（展示框）、R2-L（戰爭中紅石火把限制）：僅編譯確認，待有場景再補。
+3. R2.7：把 `tools/check-legacy-api.sh`（舊 API 棘輪）與 `tools/scan-templates.sh --check`（藍圖盤點）納入提交前檢查；剩餘 `gpl/InventorySerializer` 的 3 處 `get/setDurability` 併入 R6。
+4. 下一階段 R3（排程與生命週期）；U1 的「舊 id:data → 新方塊」對照表以 `tools/template-blocks-baseline.txt` 的 708 組為涵蓋清單。

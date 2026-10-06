@@ -1,6 +1,6 @@
 # CivCraft 重構與升級路線圖
 
-> 更新：2026-10-06 ｜ 狀態：進行中（R2.5 完成待驗證，下一步 R2.6）
+> 更新：2026-10-06 ｜ 狀態：進行中（R2.6 完成，下一步 R2.7）
 > 依據：[ARCHITECTURE](ARCHITECTURE.md)（現況分析）、[基準線](testing/00-baseline-1.12.2.md)
 > 本檔記錄決策與流程；執行結果記在 [測試紀錄](testing/README.md)。
 
@@ -102,7 +102,7 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | R2.3 | `MaterialData`／`org.bukkit.material.*` 的使用收進 `ItemManager`（方向、看板、發射器等） | 看板／箱子／發射器相關測項 |
 | R2.4 | 舊命名 `Material` 常數改為透過 `compat/LegacyMaterials`（語意判斷與設定集合）取得 | javac；對應功能測項（**完成，待伺服器驗證**） |
 | R2.5 | `get/setDurability` 分成「損耗」（`ItemManager.getDamage/setDamage`）與「變體」（`LegacyMaterials` 的語意判斷）；`new ItemStack(int,…)` 改走 `ItemManager.createItemStack` | 自訂物品、耐久、附魔（**完成，待伺服器驗證**） |
-| R2.6 | `Template`／`TemplateStream` 的 id:data 解析與貼上全部走 `ItemManager`；補「藍圖載入完整性」自動檢查 | 2.8.8、2.3.1 |
+| R2.6 | 藍圖 id:data：確認解析與貼上已全部走 `ItemManager`／`SimpleBlock`（無需改程式）；新增離線盤點 `tools/scan-templates.sh` 與基準 `tools/template-blocks-baseline.txt`（**完成**，見 §4.5） | 2.8.8、2.3.1 |
 | R2.7 | 腳本棘輪設為 0 洩漏，寫入 CI／提交前檢查 | 腳本 |
 
 每個子步驟獨立 commit，**行為不變**，編譯通過並在伺服器上跑相關基準線測項。
@@ -122,10 +122,31 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 
 ---
 
+### 4.5 藍圖資料盤點（R2.6，`tools/scan-templates.sh`）
+
+實測（`civcraft_data/templates`）：
+
+| 項目 | 數值 |
+|---|---:|
+| `.def` 藍圖檔 | 1274 |
+| 方塊行（`x:y:z,id:data`） | 47,440,440 |
+| 帶指令欄位的行（看板、箱子等） | 36,801 |
+| 不同的 `id:data` 組合 | 708 |
+| 不同的方塊 id | 158 |
+| 座標超出標頭尺寸、id 超出 0–255、data 超出 0–15、格式錯誤 | 全部 0 |
+| 在 1.12.2 找不到對應 `Material` 的 id | 0 |
+
+- 解析（`TemplateStream.getSimpleBlockFromLine`）把 id、data 讀成整數放進 `SimpleBlock`（領域型別）；貼上走 `ItemManager.setTypeIdAndData`。`Template`／`TemplateStream` 沒有直接使用舊 Bukkit API（檢查腳本佐證），所以 R2.6 **不需要改 Java 程式**。
+- 這 708 組合就是 U1 對照表必須涵蓋的清單；`tools/scan-templates.sh --check` 在新藍圖引入基準以外的組合時會失敗，掃描約需 1 分鐘。
+- 執行期還會產生同格式的藍圖：`templates/undo/…`（建造前的方塊備份）與 `templates/inprogress/…`。既有伺服器上的這些檔案存的是**舊 id:data**，升級時必須能被讀回（見 §5）。
+
+---
+
 ## 5. 風險與待查
 - **DB 內序列化的物品**（`InventorySerializer`、貿易商品物品等）在壓平後格式可能改變；R6 前先盤點，U1 前要有遷移或雙讀方案。
 - **自訂物品靠 lore＋NBT 識別**（`AttributeUtil`，46 檔）：既有玩家物品要能被新版讀取。
 - **世界升級**（Mojang DataFixer）會改世界檔，務必先在複製世界上試。
+- **執行期產生的藍圖檔**（`templates/undo`、`templates/inprogress`）保存舊 id:data：升級後仍要能讀回，或升級前先清空進行中的建造與可復原的紀錄。
 - **async 任務碰世界**（41 檔使用 `asyncTask/asyncTimer`）：現代 Paper 對此更嚴格，R3 要審計。
 - **授權不一致**（檔頭 proprietary 與根目錄 GPL）：重新發布前需釐清。
 
