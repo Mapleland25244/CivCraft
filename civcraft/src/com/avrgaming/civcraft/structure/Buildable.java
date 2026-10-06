@@ -88,7 +88,6 @@ import com.avrgaming.civcraft.threading.tasks.PostBuildSyncTask;
 import com.avrgaming.civcraft.tutorial.CivTutorial;
 import com.avrgaming.civcraft.util.AABB;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.CallbackInterface;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
@@ -625,7 +624,7 @@ public abstract class Buildable extends SQLObject {
 		BuildUndoTask task = new BuildUndoTask(filepath, this.getCorner().toString(), this.getCorner(), 0, this.getTown().getName());
 		
 		this.town.undo_tasks.add(task);
-		BukkitObjects.scheduleAsyncDelayedTask(task, 0);
+		TaskMaster.asyncTask(task, 0);
 	}
 	
 	public void unbindStructureBlocks() {
@@ -1077,7 +1076,7 @@ public abstract class Buildable extends SQLObject {
 		BuildAsyncTask task = new BuildAsyncTask(this, tpl, this.getBuildSpeed(), this.getBlocksPerTick(), center.getBlock());
 		
 		this.town.build_tasks.add(task);
-		BukkitObjects.scheduleAsyncDelayedTask(task, 0);
+		TaskMaster.asyncTask(task, 0);
 	}
 	
 	public int getBuildSpeed() {

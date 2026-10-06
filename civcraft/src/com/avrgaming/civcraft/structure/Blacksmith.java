@@ -50,7 +50,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.tasks.NotificationTask;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.BukkitObjects;
+import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.SimpleBlock;
@@ -383,7 +383,7 @@ public class Blacksmith extends Structure {
 		player.getInventory().removeItem(itemsInHand);
 		//BukkitTools.sch
 		// Schedule a message to notify the player when the smelting is finished.
-		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
+		TaskMaster.asyncTask(new NotificationTask(player.getName(), 
 				CivColor.LightGreen+CivSettings.localize.localizedString("var_blacksmith_smelt_asyncNotify",itemsInHand.getAmount(),CivData.getDisplayName(ItemManager.getId(itemsInHand)))), 
 				TimeTools.toTicks(SMELT_TIME_SECONDS));
 		

@@ -23,7 +23,6 @@ import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import com.avrgaming.civcraft.main.CivCraft;
 
@@ -56,20 +55,8 @@ public class BukkitObjects {
 		return getServer().getScheduler();
 	}
 	
-	public static int scheduleSyncDelayedTask(Runnable task, long delay) {
-		return getScheduler().scheduleSyncDelayedTask(plugin, task, delay);
-	}
-	
-	public static BukkitTask scheduleAsyncDelayedTask(Runnable task, long delay) {
-		return getScheduler().runTaskLaterAsynchronously(plugin, task, delay);
-	}
-	
-	public static int scheduleSyncRepeatingTask(Runnable task, long delay, long repeat) {
-		return getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, repeat);
-	}
-	
-	public static BukkitTask scheduleAsyncRepeatingTask(Runnable task, long delay, long repeat) {
-		return getScheduler().runTaskTimerAsynchronously(plugin, task, delay, repeat);
+	public static CivCraft getPlugin() {
+		return plugin;
 	}
 
 }
