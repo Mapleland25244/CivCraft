@@ -41,7 +41,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.avrgaming.civcraft.object.*;
-import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -112,7 +111,6 @@ public class CivGlobal {
 	public static double LIGHTHOUSE_WATER_BOAT_SPEED = 1.1;
 
 	private static boolean useEconomy;
-	public static Economy econ;
 	
 	private static Map<String, QuestionBaseTask> questions = new ConcurrentHashMap<String, QuestionBaseTask>();
 	public static Map<String, CivQuestionTask> civQuestions = new ConcurrentHashMap<String, CivQuestionTask>();
@@ -2172,10 +2170,6 @@ public class CivGlobal {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	public static Economy getEconomy() {
-		return econ == null ? (econ = Bukkit.getServicesManager().getRegistration(Economy.class).getProvider()) : econ;
 	}
 
 	public static EconObject createEconObject(SQLObject holder) {

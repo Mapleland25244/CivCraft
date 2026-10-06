@@ -9,13 +9,10 @@ import com.avrgaming.civcraft.config.ConfigMobSpawner;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.SQLUpdate;
 import com.avrgaming.civcraft.exception.InvalidNameException;
+import com.avrgaming.civcraft.integration.Integrations;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.util.BlockCoord;
 
-import de.hellfirepvp.api.CustomMobsAPI;
-import de.hellfirepvp.api.data.ICustomMob;
-import de.hellfirepvp.api.data.ISpawnerEditor;
-import de.hellfirepvp.api.data.ISpawnerEditor.SpawnerInfo;
 
 public class MobSpawner extends SQLObject {
 
@@ -139,33 +136,7 @@ public class MobSpawner extends SQLObject {
 
 	public void setActive(Boolean active) {
 		this.active = active;
-		ISpawnerEditor spawnerEditor = CustomMobsAPI.getSpawnerEditor();
-		 if (spawnerEditor != null) {
-			if (this.active) {
-				SpawnerInfo spawner = spawnerEditor.getSpawner(this.getCoord().getLocation());
-				if (spawner.getSpawner() != null) {
-//		            CivLog.warning("Unable to create Spawner; " + spawner.toString() + " spawner exists.");
-					return;
-				}
-		        ICustomMob mob = CustomMobsAPI.getCustomMob(this.getName());
-		        if (mob == null) {
-
-		            CivLog.warning("Unable to create Spawner; " + this.getName() + " does not exist");
-		            return;
-		        }
-		        spawnerEditor.setSpawner(mob, this.getCoord().getLocation(), 60);
-			} else {
-				SpawnerInfo spawner = spawnerEditor.getSpawner(this.getCoord().getLocation());
-				if (spawner.getSpawner() != null) {
-		            CivLog.debug("Spawner Disabled at "+this.getCoord().getLocation());
-					spawnerEditor.resetSpawner(this.getCoord().getLocation());
-				}
-			}
-		} else {
-
-            CivLog.warning("Unable to create Spawners; CustomMobsAPI does not exist");
-        }
+		Integrations.setMobSpawnerActive(this.getName(), this.getCoord().getLocation(), this.active);
 	}
-    
-    
+
 }

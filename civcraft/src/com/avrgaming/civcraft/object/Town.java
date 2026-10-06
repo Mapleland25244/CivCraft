@@ -90,7 +90,7 @@ import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
 import com.avrgaming.global.perks.components.CustomTemplate;
 
-import net.md_5.itag.iTag;
+import com.avrgaming.civcraft.integration.Integrations;
 
 public class Town extends SQLObject {
 
@@ -515,9 +515,9 @@ public class Town extends SQLObject {
 			this.defaultGroup.save();
 		}
 		Player player = Bukkit.getPlayer(res.getUUID());
-		if (player != null && CivSettings.hasITag)
+		if (player != null)
 		{
-			iTag.getInstance().refreshPlayer(player, new HashSet<>(Bukkit.getOnlinePlayers()));
+			Integrations.refreshNameTag(player, new HashSet<>(Bukkit.getOnlinePlayers()));
 		}
 	}
 	
@@ -1292,9 +1292,9 @@ public class Town extends SQLObject {
 		resident.save();
 		this.save();
 		Player player = Bukkit.getPlayer(resident.getUUID());
-		if (player != null && CivSettings.hasITag)
+		if (player != null)
 		{
-			iTag.getInstance().refreshPlayer(player, new HashSet<>(Bukkit.getOnlinePlayers()));
+			Integrations.refreshNameTag(player, new HashSet<>(Bukkit.getOnlinePlayers()));
 		}
 	}
 

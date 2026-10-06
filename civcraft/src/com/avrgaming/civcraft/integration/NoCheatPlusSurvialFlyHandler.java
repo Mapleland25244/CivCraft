@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.nocheat;
+package com.avrgaming.civcraft.integration;
 
 import org.bukkit.entity.Player;
 

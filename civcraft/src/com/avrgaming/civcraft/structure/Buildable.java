@@ -98,8 +98,7 @@ import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
-import com.wimbli.WorldBorder.BorderData;
-import com.wimbli.WorldBorder.Config;
+import com.avrgaming.civcraft.integration.Integrations;
 
 public abstract class Buildable extends SQLObject {
 
@@ -1005,11 +1004,8 @@ public abstract class Buildable extends SQLObject {
 						deletedRoadBlocks.add(rb);
 					}
 				
-					BorderData border = Config.Border(b.getWorld().getName());
-					if (border != null) {
-						if(!border.insideBorder(b.getLocation().getX(), b.getLocation().getZ(), Config.ShapeRound())) {
-							throw new CivException(CivSettings.localize.localizedString("cannotBuild_outsideBorder"));
-						}
+					if (!Integrations.isInsideBorder(b.getLocation())) {
+						throw new CivException(CivSettings.localize.localizedString("cannotBuild_outsideBorder"));
 					}
 				}
 			}

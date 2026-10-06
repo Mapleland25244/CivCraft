@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.listener;
+package com.avrgaming.civcraft.integration;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

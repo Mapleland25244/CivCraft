@@ -68,15 +68,13 @@ import com.avrgaming.civcraft.listener.ChatListener;
 import com.avrgaming.civcraft.listener.CustomItemManager;
 import com.avrgaming.civcraft.listener.DebugListener;
 import com.avrgaming.civcraft.listener.DisableXPListener;
-import com.avrgaming.civcraft.listener.HeroChatListener;
 import com.avrgaming.civcraft.listener.MarkerPlacementManager;
 import com.avrgaming.civcraft.listener.PlayerListener;
-import com.avrgaming.civcraft.listener.TagAPIListener;
 import com.avrgaming.civcraft.listener.armor.ArmorListener;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementArenaItem;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
-import com.avrgaming.civcraft.nocheat.NoCheatPlusSurvialFlyHandler;
+import com.avrgaming.civcraft.integration.Integrations;
 import com.avrgaming.civcraft.populators.MobSpawnerPopulator;
 import com.avrgaming.civcraft.populators.TradeGoodPopulator;
 import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
@@ -237,24 +235,7 @@ public final class CivCraft extends JavaPlugin {
 		pluginManager.registerEvents(new PvPListener(), this);
 		pluginManager.registerEvents(new LoreEnhancementArenaItem(), this);
 
-		if ((hasPlugin("iTag") || hasPlugin("TagAPI")) && hasPlugin("ProtocolLib")) {
-			CivSettings.hasITag = true;
-			pluginManager.registerEvents(new TagAPIListener(), this);
-			CivLog.debug("TagAPI Registered");
-		} else {
-			CivLog.warning("TagAPI not found, not registering TagAPI hooks. This is fine if you're not using TagAPI.");
-
-		}
-		
-		if (hasPlugin("HeroChat")) {
-			pluginManager.registerEvents(new HeroChatListener(), this);
-		}
-
 		pluginManager.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
-	}
-	
-	private void registerNPCHooks() {
-		NoCheatPlusSurvialFlyHandler.init();
 	}
 	
 	@Override
@@ -272,6 +253,7 @@ public final class CivCraft extends JavaPlugin {
 				
 		try {
 			CivSettings.init(this);
+			Integrations.init(this);
 			
 			SQL.initialize();
 			SQL.initCivObjectTables();
@@ -321,12 +303,6 @@ public final class CivCraft extends JavaPlugin {
 	
 		registerEvents();
 		
-		if (hasPlugin("NoCheatPlus")) {
-			registerNPCHooks();
-		} else {
-			CivLog.warning("NoCheatPlus not found, not registering NCP hooks. This is fine if you're not using NCP.");
-		}
-		
 		startTimers();
 				
 		//creativeInvPacketManager.init(this);		
@@ -342,7 +318,7 @@ public final class CivCraft extends JavaPlugin {
 	public boolean hasPlugin(String name) {
 		Plugin p;
 		p = getServer().getPluginManager().getPlugin(name);
-		return (p != null);
+		return (p != null && p.isEnabled());
 	}
 
 	public boolean isError() {

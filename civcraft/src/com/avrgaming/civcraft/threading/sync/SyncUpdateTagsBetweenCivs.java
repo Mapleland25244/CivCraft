@@ -21,11 +21,10 @@ package com.avrgaming.civcraft.threading.sync;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.md_5.itag.iTag;
+import com.avrgaming.civcraft.integration.Integrations;
 
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.config.CivSettings;
 
 
 public class SyncUpdateTagsBetweenCivs implements Runnable {
@@ -39,17 +38,15 @@ public class SyncUpdateTagsBetweenCivs implements Runnable {
 
 	@Override
 	public void run() {
-		if (CivSettings.hasITag) {
-			for (Player player : civList) {
-				if (!otherCivList.isEmpty()) {
-					iTag.getInstance().refreshPlayer(player, otherCivList);
-				}
+		for (Player player : civList) {
+			if (!otherCivList.isEmpty()) {
+				Integrations.refreshNameTag(player, otherCivList);
 			}
-			
-			for (Player player : otherCivList) {
-				if (!civList.isEmpty()) {
-					iTag.getInstance().refreshPlayer(player, civList);
-				}
+		}
+		
+		for (Player player : otherCivList) {
+			if (!civList.isEmpty()) {
+				Integrations.refreshNameTag(player, civList);
 			}
 		}
 	}
