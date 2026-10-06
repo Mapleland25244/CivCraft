@@ -62,7 +62,7 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 
 | 步驟 | 內容 | 前置 | 主要風險 |
 |---|---|---|---|
-| U0 | 建置依賴改為 Paper API 1.12.2（Spigot API 的超集），伺服器仍為 1.12.2 | R1 | 低 |
+| U0 | 建置依賴改為 Paper API 1.12.2（Spigot API 的超集），伺服器仍為 1.12.2。**程式完成，待驗證**：`paper-api` 取代 `spigot-api`，NMS 仍用 BuildTools 的 `spigot`；javac、Maven 建置、Paper 1.12.2 啟動皆 PASS，基準線回歸（U0.3）擱置，已打 tag `u0-paper-api`（紀錄：[05-u0-paper-api](testing/05-u0-paper-api.md)） | R1 | 低 |
 | U1 | **1.13**（壓平）：`api-version`、`Material` 改名、不再用 `MaterialData`／short data、NMS adapter、藍圖載入時轉換 | R2、R3、R4 | 最高：物品 NBT、DB 內序列化物品格式 |
 | U2 | **1.16.5**（Java 8 最後一版）：`libraries:` 載入相依、NBT 改 `PersistentDataContainer`（雙讀舊資料） | U1 | 中 |
 | U3 | **1.17–1.20.4**（Java 17）：BoneCP 換 HikariCP、NMS 改 Mojang 對照、評估 Paper 的舊插件支援 | U2 | 中高 |

@@ -21,6 +21,7 @@
 | [02-r2-legacy-api.md](02-r2-legacy-api.md) | 方塊／物品存取層（舊 API 收進 `ItemManager`） | R2 | 進行中 |
 | [03-r3-scheduling.md](03-r3-scheduling.md) | 排程與生命週期（`TaskScheduler`、`onDisable`、async 審計） | R3 | 已驗證（有擱置項） |
 | [04-r4-nms.md](04-r4-nms.md) | NMS 與 NBT 隔離（`nms` 套件、`AttributeUtil`／`HorseModifier` 外殼） | R4 | 程式完成，部分驗證（有既有 bug 與未觸發項） |
+| [05-u0-paper-api.md](05-u0-paper-api.md) | 建置依賴改為 Paper API 1.12.2 | U0 | Maven 建置與 Paper 啟動 PASS，基準線回歸擱置 |
 | [_template.md](_template.md) | 空白範本 | — | — |
 
 ---
