@@ -52,16 +52,18 @@ public class DenyCommand implements CommandExecutor {
 		}
 
 		Resident resident = CivGlobal.getResident(player);
-		if (resident.getCiv().getLeaderGroup().hasMember(resident)) {
-			CivLeaderQuestionTask civTask = (CivLeaderQuestionTask) CivGlobal.getQuestionTask("civ:"+resident.getCiv().getName());
-			if (civTask != null) {
-				synchronized(civTask) {
-					civTask.setResponse("deny");
-					civTask.setResponder(resident);
-					civTask.notifyAll();
+		if (resident.hasTown()) {
+			if (resident.getCiv().getLeaderGroup().hasMember(resident)) {
+				CivLeaderQuestionTask civTask = (CivLeaderQuestionTask) CivGlobal.getQuestionTask("civ:"+resident.getCiv().getName());
+				if (civTask != null) {
+					synchronized(civTask) {
+						civTask.setResponse("deny");
+						civTask.setResponder(resident);
+						civTask.notifyAll();
+					}
 				}
+				return true;
 			}
-			return true;
 		}
 		
 
