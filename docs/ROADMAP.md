@@ -162,3 +162,34 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | TitleAPI | — | 以 Paper 的 `Player#sendTitle` 取代 |
 | Anti-Cheat（`ACManager`、`WarAntiCheat`） | 依賴已無法控制的外部網站 | 在 U1 之前移除 |
 | dynmap＋`civcraft_dynmap` | 3.0-beta 可用 | 等 R8 後配合 |
+
+---
+
+## 7. U1（1.13.2）執行計畫
+
+> 決定（2026-10-06）：目標 **1.13.2**（NMS `v1_13_R2`）；**兩階段**；分支 `u1-1.13`（從 `ai-refactor` 開出，回滾點 tag `u0-paper-api`）。此分支**不再支援 1.12.2**。
+
+### 7.1 現況盤點（以 Paper 1.13.2 API 試編譯，實測）
+- 約 **212 個編譯錯誤、20 個檔案**（javac 在符號解析階段就停，進入型別檢查後還會有更多）：`LegacyMaterials` 55、`FisheryAsyncTask` 41、`CivGlobal` 19、`ItemManager` 18、`Template` 17、`CivTutorial` 13、其餘各 ≤7。
+- 1.13 **移除**（不是棄用）：`ItemStack(int,…)`、`getTypeId`、`setTypeId`、`Material#getMaterial(int)`、`MaterialData(int,byte)`；`Material#getId()` 只剩 `LEGACY_*` 有效。
+- 還沒收進邊界的舊名稱：`Biome` 改名（`ICE_MOUNTAINS`、`ROOFED_FOREST`、`SWAMPLAND`…，`CivGlobal`／`BiomeCache`）、`RAW_FISH` 等魚類（`FisheryAsyncTask`）、`Material` 在 `switch` 的 case 標籤。R2 的棘輪沒有涵蓋 `Biome`。
+- `nms/v1_12_R1` 對 1.13.2 的 spigot 編譯**沒有錯誤**，但**執行期語意改變**：`display.Name`／`display.Lore` 在 1.13 起是 JSON 文字元件（舊為純字串）；物品 ID 壓平；實體類型、屬性名稱 `generic.*` 需實測。
+- 可用的橋：`Bukkit.getUnsafe().fromLegacy(MaterialData)`／`fromLegacy(Material, byte)`（舊 → 新）、`toLegacy(Material)`；`Block#getData()`、`BlockState#getRawData()` 仍可讀舊 data。
+
+### 7.2 U1a：在 1.13.2 跑起來（保留數字 ID，不設 `api-version`）
+| 步驟 | 內容 | 驗證 |
+|---|---|---|
+| U1a.0 | 備份、複製世界與 DB 副本、Paper 1.13.2 測試伺服器（使用者準備）；`pom` 改 1.13.2（本分支已做） | — |
+| U1a.1 | `compat/LegacyBridge`：id → `LEGACY_*` 材質表（掃 `Material.values()`），`(id,data)` → 新 `Material`／`BlockData`（快取），新 `Material` → `(id,data)` 反查（啟動時反向建表） | 離線：708 組藍圖組合全部能轉換且互相對得上（擴充 `scan-templates`） |
+| U1a.2 | `ItemManager` 改用 `LegacyBridge`（`createItemStack`、`getId`、`setTypeIdAndData`、`getBlockTypeId` 等簽名不變） | javac；貼藍圖 |
+| U1a.3 | `LegacyMaterials` 改成 1.13 名稱；`Biome`、魚類、`switch` case 洩漏補進 `compat`；`check-legacy-api.sh` 的規則改為 1.13 後的禁用清單 | javac；棘輪 |
+| U1a.4 | `nms/v1_13_R2`：複製 adapter、`display.Name`／`Lore` 讀寫改 JSON（讀取同時接受舊純字串）；`Nms` 登記 `v1_13_R2`；刪除 `v1_12_R1`（可由 tag 取回） | 4.2、4.3 物品相容 |
+| U1a.5 | `plugin.yml` **不設** `api-version`（保持 legacy 模式），在 Paper 1.13.2 啟動、跑 [基準線](testing/00-baseline-1.12.2.md) | 新紀錄 `06-u1a-1.13.2.md` |
+
+### 7.3 U1b：換成新 API
+設 `api-version: 1.13`、移除 `LEGACY_*` 與 `MaterialData`；以明確對照表（708 組）取代 `fromLegacy`，並與 `LegacyBridge` 結果逐項比對；DB 內序列化物品（`InventorySerializer`）與 `templates/undo`、`inprogress` 的雙讀。
+
+### 7.4 風險
+- **世界升級**只在複製的世界上試；升級後無法回到 1.12.2。
+- 既有物品的 `display` 為純字串：Bukkit 的 `ItemMeta` 讀得到，但直接寫 NMS 的路徑必須同時接受兩種格式。
+- 1.13 起藥水、附魔、實體 ID 皆改為命名空間字串，`materials.yml` 中以數字 ID 描述的附魔（`getEnchantById`）需檢查。
