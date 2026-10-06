@@ -1,6 +1,6 @@
 # CivCraft 重構與升級路線圖
 
-> 更新：2026-10-06 ｜ 狀態：R2 完成（R2.7 完成），下一步 R3
+> 更新：2026-10-06 ｜ 狀態：R2、R3 完成，下一步 R4
 > 依據：[ARCHITECTURE](ARCHITECTURE.md)（現況分析）、[基準線](testing/00-baseline-1.12.2.md)
 > 本檔記錄決策與流程；執行結果記在 [測試紀錄](testing/README.md)。
 
@@ -48,7 +48,7 @@
 | R0 | 可重現的 build、基準線 [基準線](testing/00-baseline-1.12.2.md) | S | 完成 |
 | R1 | 外部插件整合層（`integration` 套件） | M | 完成（[Phase 1 紀錄](testing/01-phase1-integration.md)） |
 | **R2** | **方塊／物品存取層：所有舊 API（數字 ID、`MaterialData`、舊 `Material` 常數、`getDurability` 當 data 用）只留在 `ItemManager` 邊界** | **L** | **完成**（見 §4；紀錄：[02-r2-legacy-api](testing/02-r2-legacy-api.md)） |
-| R3 | 排程與生命週期：`TaskMaster` 介面化、修 `cancelTimer`、`onDisable` 取消任務、審計 async 是否碰世界 | M | 待做 |
+| **R3** | **排程與生命週期：`TaskMaster` 介面化、修 `cancelTimer`、`onDisable` 取消任務、審計 async 是否碰世界** | **M** | **完成（已驗證）**；未觸發：重生傳送、間諜失敗、產出；擱置：Roman Barracks 箱子朝向與拆除破損，未歸因（紀錄：[03-r3-scheduling](testing/03-r3-scheduling.md)） |
 | R4 | NMS 與 NBT 隔離：9 個 NMS 檔進 `nms`，`AttributeUtil` 包一層並保留舊 NBT 讀取 | M | 待做 |
 | R5 | 指令層：頂層指令每次執行建新實例、方法查找快取並於啟動時檢查 `_cmd`、補上真正的 `TabCompleter` | S–M | 待做 |
 | R6 | 持久化：收斂 12 個直接 JDBC 的檔案、`SQLUpdate` 去重、盤點 DB 內序列化的物品 | L | 待做 |

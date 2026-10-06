@@ -19,6 +19,7 @@
 | [00-baseline-1.12.2.md](00-baseline-1.12.2.md) | 改動前的 1.12.2 行為（基準線，不覆蓋） | R0 | 基準線，持續補測 |
 | [01-phase1-integration.md](01-phase1-integration.md) | 外部插件整合層（`integration` 套件） | R1 | 已驗證 |
 | [02-r2-legacy-api.md](02-r2-legacy-api.md) | 方塊／物品存取層（舊 API 收進 `ItemManager`） | R2 | 進行中 |
+| [03-r3-scheduling.md](03-r3-scheduling.md) | 排程與生命週期（`TaskScheduler`、`onDisable`、async 審計） | R3 | 已驗證（有擱置項） |
 | [_template.md](_template.md) | 空白範本 | — | — |
 
 ---
