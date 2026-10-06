@@ -166,7 +166,7 @@ public class ArmorListener implements Listener{
 			if(armorEquipEvent.isCancelled()){
 				ItemStack i = e.getBrokenItem().clone();
 				i.setAmount(1);
-				i.setDurability((short) (i.getDurability() - 1));
+				ItemManager.setDamage(i, (short) (ItemManager.getDamage(i) - 1));
 				if(type.equals(ArmorType.HELMET)){
 					p.getInventory().setHelmet(i);
 				}else if(type.equals(ArmorType.CHESTPLATE)){

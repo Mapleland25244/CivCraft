@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.items.components;
 
+import com.avrgaming.civcraft.util.ItemManager;
 import gpl.AttributeUtil;
 
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -13,7 +14,7 @@ public class NoDurability extends ItemComponent {
 	
 	@Override
 	public void onInventoryOpen(InventoryOpenEvent event, ItemStack stack) {
-		stack.setDurability((short) 0);		
+		ItemManager.setDamage(stack, (short) 0);		
 	}
 
 }

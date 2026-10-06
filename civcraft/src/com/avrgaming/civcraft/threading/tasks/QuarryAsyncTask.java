@@ -150,10 +150,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				
 				if (ItemManager.getId(stack) == CivData.WOOD_PICKAXE) {
 					try {
-						short damage = ItemManager.getData(stack);
+						short damage = ItemManager.getDamage(stack);
 						this.updateInventory(Action.REMOVE, source_inv, stack);
 						damage+= modifier;
-						stack.setDurability(damage);
+						ItemManager.setDamage(stack, damage);
 						if (damage < 59 && stack.getAmount() == 1) {
 							this.updateInventory(Action.ADD, source_inv, stack);
 						}
@@ -188,10 +188,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 				if (this.quarry.getLevel() >= 2 && ItemManager.getId(stack) == CivData.STONE_PICKAXE) {
 					try {
-						short damage = ItemManager.getData(stack);
+						short damage = ItemManager.getDamage(stack);
 						this.updateInventory(Action.REMOVE, source_inv, stack);
 						damage+= modifier;
-						stack.setDurability(damage);
+						ItemManager.setDamage(stack, damage);
 						if (damage < 131 && stack.getAmount() == 1) {
 							this.updateInventory(Action.ADD, source_inv, stack);
 						}
@@ -230,10 +230,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 				if (this.quarry.getLevel() >= 3 && ItemManager.getId(stack) == CivData.IRON_PICKAXE) {
 					try {
-						short damage = ItemManager.getData(stack);
+						short damage = ItemManager.getDamage(stack);
 						this.updateInventory(Action.REMOVE, source_inv, stack);
 						damage+= modifier;
-						stack.setDurability(damage);
+						ItemManager.setDamage(stack, damage);
 						if (damage < 250 && stack.getAmount() == 1) {
 							this.updateInventory(Action.ADD, source_inv, stack);
 						}
@@ -279,10 +279,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 				if (ItemManager.getId(stack) == CivData.GOLD_PICKAXE) {
 					try {
-						short damage = ItemManager.getData(stack);
+						short damage = ItemManager.getDamage(stack);
 						this.updateInventory(Action.REMOVE, source_inv, stack);
 						damage+= modifier;
-						stack.setDurability(damage);
+						ItemManager.setDamage(stack, damage);
 						if (damage < 32 && stack.getAmount() == 1) {
 							this.updateInventory(Action.ADD, source_inv, stack);
 						}
@@ -315,10 +315,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 				if (this.quarry.getLevel() >= 4 && ItemManager.getId(stack) == CivData.DIAMOND_PICKAXE) {
 					try {
-						short damage = ItemManager.getData(stack);
+						short damage = ItemManager.getDamage(stack);
 						this.updateInventory(Action.REMOVE, source_inv, stack);
 						damage+= modifier;
-						stack.setDurability(damage);
+						ItemManager.setDamage(stack, damage);
 						if (damage < 1561 && stack.getAmount() == 1) {
 							this.updateInventory(Action.ADD, source_inv, stack);
 						}

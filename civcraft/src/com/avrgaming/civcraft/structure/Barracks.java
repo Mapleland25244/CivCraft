@@ -230,7 +230,7 @@ public class Barracks extends Structure {
 				throw new CivException(CivSettings.localize.localizedString("barracks_repair_invalidItem"));
 			}
 			
-			if (inHand.getDurability() == 0) {
+			if (ItemManager.getDamage(inHand) == 0) {
 				throw new CivException(CivSettings.localize.localizedString("barracks_repair_atFull"));
 			}
 			
@@ -294,7 +294,7 @@ public class Barracks extends Structure {
 		}
 		
 		resident.getTreasury().withdraw(cost);
-		player.getInventory().getItemInMainHand().setDurability((short)0);
+		ItemManager.setDamage(player.getInventory().getItemInMainHand(), (short)0);
 		
 		CivMessage.sendSuccess(player, CivSettings.localize.localizedString("var_barracks_repair_Success",craftMat.getName(),cost,CivSettings.CURRENCY_NAME));
 		

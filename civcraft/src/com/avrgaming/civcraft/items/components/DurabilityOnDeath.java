@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.items.components;
 
+import com.avrgaming.civcraft.util.ItemManager;
 import gpl.AttributeUtil;
 
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -47,10 +48,10 @@ public class DurabilityOnDeath extends ItemComponent {
 		double percent = this.getDouble("value");
 		
 		int reduction = (int)(result.stack.getType().getMaxDurability()*percent);
-		int durabilityLeft = result.stack.getType().getMaxDurability() - result.stack.getDurability();
+		int durabilityLeft = result.stack.getType().getMaxDurability() - ItemManager.getDamage(result.stack);
 		
 		if (durabilityLeft > reduction) {
-			result.stack.setDurability((short)(result.stack.getDurability() + reduction));
+			ItemManager.setDamage(result.stack, (short)(ItemManager.getDamage(result.stack) + reduction));
 		} else {
 			result.destroyItem = true;
 		}		

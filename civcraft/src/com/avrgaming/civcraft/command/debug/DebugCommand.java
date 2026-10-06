@@ -688,7 +688,7 @@ public class DebugCommand extends CommandBase {
 	public void getdura_cmd() throws CivException {
 		Player player = getPlayer();
 		ItemStack inHand = player.getInventory().getItemInMainHand();
-		CivMessage.send(player, "Durability:"+inHand.getDurability());
+		CivMessage.send(player, "Durability:"+ItemManager.getDamage(inHand));
 		CivMessage.send(player, "MaxDura:"+inHand.getType().getMaxDurability());
 		
 	}
@@ -698,9 +698,9 @@ public class DebugCommand extends CommandBase {
 		Integer dura = getNamedInteger(1);
 		
 		ItemStack inHand = player.getInventory().getItemInMainHand();
-		inHand.setDurability((short)dura.shortValue());
+		ItemManager.setDamage(inHand, (short)dura.shortValue());
 		
-		CivMessage.send(player, "Set Durability:"+inHand.getDurability());
+		CivMessage.send(player, "Set Durability:"+ItemManager.getDamage(inHand));
 		CivMessage.send(player, "MaxDura:"+inHand.getType().getMaxDurability());
 		
 	}

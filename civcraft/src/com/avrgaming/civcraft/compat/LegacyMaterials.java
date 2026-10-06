@@ -6,6 +6,8 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.main.CivData;
+
 /**
  * Material knowledge that depends on the Minecraft version. Together with ItemManager this is the only
  * place that may use pre-1.13 Material names (SIGN_POST, INK_SACK, SOIL, ...). When the server version
@@ -60,6 +62,23 @@ public final class LegacyMaterials {
 
 	public static boolean isEnchantingTable(Material m) {
 		return m == Material.ENCHANTMENT_TABLE;
+	}
+
+	/** Enchanted (notch) golden apple: legacy golden apple with damage 1. */
+	public static boolean isNotchApple(ItemStack stack) {
+		return stack != null && stack.getType() == Material.GOLDEN_APPLE && stack.getDurability() == (short) 0x1;
+	}
+
+	/** Potion of invisibility: legacy potion whose low four data bits are 0xE. */
+	public static boolean isInvisibilityPotion(ItemStack stack) {
+		return stack != null && stack.getType() == Material.POTION && (stack.getDurability() & 0x000F) == 0xE;
+	}
+
+	/** Mundane or thick potion base, which may not be brewed further. */
+	public static boolean isUnbrewablePotionBase(ItemStack stack) {
+		return stack.getDurability() == CivData.MUNDANE_POTION_DATA
+				|| stack.getDurability() == CivData.MUNDANE_POTION_EXT_DATA
+				|| stack.getDurability() == CivData.THICK_POTION_DATA;
 	}
 
 	/** Gunpowder (legacy SULPHUR). */

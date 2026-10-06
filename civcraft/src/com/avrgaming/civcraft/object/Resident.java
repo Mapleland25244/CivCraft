@@ -840,7 +840,7 @@ public class Resident extends SQLObject {
 	public int giveItem(int itemId, short damage, int amount) throws CivException {
 		Player player = CivGlobal.getPlayer(this);
 		Inventory inv = player.getInventory();
-		ItemStack stack = new ItemStack(itemId, amount, damage);
+		ItemStack stack = ItemManager.createItemStack(itemId, amount, damage);
 		HashMap <Integer, ItemStack> leftovers = null;
 		leftovers = inv.addItem(stack);
 		

@@ -431,9 +431,7 @@ public class PlayerListener implements Listener {
 		if (event.getContents().contains(Material.POTION)) {
 			ItemStack potion = event.getContents().getItem(event.getContents().first(Material.POTION));
 			
-			if (potion.getDurability() == CivData.MUNDANE_POTION_DATA || 
-				potion.getDurability() == CivData.MUNDANE_POTION_EXT_DATA ||
-				potion.getDurability() == CivData.THICK_POTION_DATA) {
+			if (LegacyMaterials.isUnbrewablePotionBase(potion)) {
 				event.setCancelled(true);
 			}
 		}

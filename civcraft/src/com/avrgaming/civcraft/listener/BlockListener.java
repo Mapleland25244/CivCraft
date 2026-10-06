@@ -937,7 +937,7 @@ public class BlockListener implements Listener {
 
 		/* Disable notch apples */
 		if (ItemManager.getId(event.getItem()) == ItemManager.getId(Material.GOLDEN_APPLE)) {
-			if (event.getItem().getDurability() == (short)0x1) {
+			if (LegacyMaterials.isNotchApple(event.getItem())) {
 				CivMessage.sendError(event.getPlayer(), CivSettings.localize.localizedString("itemUse_errorGoldenApple"));
 				event.setCancelled(true);
 				return;
@@ -945,8 +945,7 @@ public class BlockListener implements Listener {
 		}	
 
 		if (stack.getType().equals(Material.POTION)) {
-			int effect = event.getItem().getDurability() & 0x000F;			
-			if (effect == 0xE) {
+			if (LegacyMaterials.isInvisibilityPotion(event.getItem())) {
 				event.setCancelled(true);
 				CivMessage.sendError(event.getPlayer(), CivSettings.localize.localizedString("itemUse_errorInvisPotion"));
 				return;
@@ -959,8 +958,7 @@ public class BlockListener implements Listener {
 		ItemStack stack = event.getItem();
 		if (stack != null) {
 			if (event.getItem().getType().equals(Material.POTION)) {
-				int effect = event.getItem().getDurability() & 0x000F;			
-				if (effect == 0xE) { 
+				if (LegacyMaterials.isInvisibilityPotion(event.getItem())) { 
 					event.setCancelled(true);
 					return;
 				}
@@ -999,8 +997,7 @@ public class BlockListener implements Listener {
 		if (event.hasItem()) {
 
 			if (event.getItem().getType().equals(Material.POTION)) {
-				int effect = event.getItem().getDurability() & 0x000F;			
-				if (effect == 0xE) {
+				if (LegacyMaterials.isInvisibilityPotion(event.getItem())) {
 					event.setCancelled(true);
 					CivMessage.sendError(event.getPlayer(), CivSettings.localize.localizedString("itemUse_errorInvisPotion"));
 					return;

@@ -442,7 +442,7 @@ public class Blacksmith extends Structure {
 				continue;
 			}
 			
-			ItemStack stack = new ItemStack(itemId, (int)amount, (short)0);
+			ItemStack stack = ItemManager.createItemStack(itemId, (int)amount, (short)0);
 			if (stack != null)
 				leftovers = inv.addItem(stack);
 	

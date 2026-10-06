@@ -129,8 +129,7 @@ public class ItemFrameStorage {
 
 		ItemFrame frame = getItemFrame();
 		if (frame != null) {
-			ItemStack newStack = new ItemStack(stack.getType(), 1, stack.getDurability());
-			ItemManager.copyData(stack, newStack);
+			ItemStack newStack = ItemManager.copyWithAmount(stack, 1);
 			newStack.setItemMeta(stack.getItemMeta());
 			frame.setItem(newStack);
 		} else {

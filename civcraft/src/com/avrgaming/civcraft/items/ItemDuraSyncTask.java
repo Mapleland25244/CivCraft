@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.items;
 
+import com.avrgaming.civcraft.util.ItemManager;
 import java.util.LinkedList;
 
 import com.avrgaming.civcraft.listener.CustomItemManager;
@@ -31,7 +32,7 @@ public class ItemDuraSyncTask implements Runnable {
 			LinkedList<ItemDurabilityEntry> entries = CustomItemManager.itemDuraMap.get(playerName);
 			
 			for (ItemDurabilityEntry entry : entries) {
-				entry.stack.setDurability(entry.oldValue);
+				ItemManager.setDamage(entry.stack, entry.oldValue);
 			}
 		}
 		CustomItemManager.duraTaskScheduled = false;

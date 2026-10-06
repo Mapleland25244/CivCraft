@@ -185,11 +185,25 @@ public class ItemManager {
 	}
 
 	/**
-	 * Copy the material data (legacy damage/variant bits) of one stack onto another.
+	 * Wear of a tool or armor piece (0 = new). Legacy: stored in the item's durability field.
+	 */
+	public static short getDamage(ItemStack stack) {
+		return stack.getDurability();
+	}
+
+	public static void setDamage(ItemStack stack, short damage) {
+		stack.setDurability(damage);
+	}
+
+	/**
+	 * Copy of a stack with another amount, keeping its type, variant (legacy damage/data bits) and
+	 * material data. Item meta is not copied.
 	 */
 	@SuppressWarnings("deprecation")
-	public static void copyData(ItemStack from, ItemStack to) {
-		to.setData(from.getData());
+	public static ItemStack copyWithAmount(ItemStack from, int amount) {
+		ItemStack copy = new ItemStack(from.getType(), amount, from.getDurability());
+		copy.setData(from.getData());
+		return copy;
 	}
 
 	public static boolean removeItemFromPlayer(Player player, Material mat, int amount) {
