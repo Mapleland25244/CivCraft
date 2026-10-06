@@ -120,7 +120,8 @@ public class ScanTemplates {
 		boolean problems = outOfBounds + badId + badData + malformed + unknown > 0;
 
 		if (args[1].equals("--write")) {
-			Files.write(baseline, out, StandardCharsets.UTF_8);
+			// Always LF, whatever the platform line separator is (the baseline is compared and diffed as text).
+			Files.write(baseline, (String.join("\n", out) + "\n").getBytes(StandardCharsets.UTF_8));
 			System.out.println("baseline written to " + baseline);
 			System.exit(problems ? 1 : 0);
 		}

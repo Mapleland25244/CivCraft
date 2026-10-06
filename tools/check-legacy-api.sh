@@ -42,6 +42,7 @@ list_hits() {
 declare -A baseline
 if [ -f "$BASELINE" ]; then
 	while IFS='=' read -r k v; do
+		v=${v%$'\r'}   # tolerate a CRLF checkout of the baseline
 		[ -n "${k:-}" ] && baseline["$k"]="$v"
 	done < "$BASELINE"
 fi
@@ -61,6 +62,8 @@ for entry in "${CATEGORIES[@]}"; do
 	if [ "$base" != "-" ] && [ "$count" -gt "$base" ]; then
 		echo "  ^ regression: $name grew from $base to $count" >&2
 		fail=1
+	elif [ "$base" != "-" ] && [ "$count" -lt "$base" ]; then
+		echo "  note: $name improved ($base -> $count); lock it in with: tools/check-legacy-api.sh --write-baseline" >&2
 	fi
 done
 

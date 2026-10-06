@@ -1,0 +1,8 @@
+# Shell scripts and git hooks must keep LF line endings: with core.autocrlf=true (the Windows default)
+# a checkout would turn them into CRLF and bash would fail on the stray \r.
+*.sh            text eol=lf
+.githooks/*     text eol=lf
+
+# Generated baselines and the tool sources are compared byte-for-byte by the check scripts.
+tools/*.txt     text eol=lf
+tools/*.java    text eol=lf
