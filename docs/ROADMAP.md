@@ -1,6 +1,6 @@
 # CivCraft 重構與升級路線圖
 
-> 更新：2026-10-06 ｜ 狀態：進行中（R2）
+> 更新：2026-10-06 ｜ 狀態：進行中（R2.4 完成待驗證，下一步 R2.5）
 > 依據：[ARCHITECTURE](ARCHITECTURE.md)（現況分析）、[基準線](testing/00-baseline-1.12.2.md)
 > 本檔記錄決策與流程；執行結果記在 [測試紀錄](testing/README.md)。
 
@@ -100,7 +100,7 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | R2.1 | 建立檢查腳本 `tools/check-legacy-api.sh` 與基準 `tools/legacy-api-baseline.txt`；列出每個洩漏點 | 腳本輸出（**完成**） |
 | R2.2 | 把直接呼叫 `getTypeId/setTypeId/getData/setData/getRawData` 收進 `ItemManager` | javac；基準線 2.3、2.2（**完成，待伺服器驗證**） |
 | R2.3 | `MaterialData`／`org.bukkit.material.*` 的使用收進 `ItemManager`（方向、看板、發射器等） | 看板／箱子／發射器相關測項 |
-| R2.4 | 舊命名 `Material` 常數改為透過 `ItemManager`／`CivData` 取得 | javac；對應功能測項 |
+| R2.4 | 舊命名 `Material` 常數改為透過 `compat/LegacyMaterials`（語意判斷與設定集合）取得 | javac；對應功能測項（**完成，待伺服器驗證**） |
 | R2.5 | `getDurability/setDurability`（當 data 用）收進 `ItemManager` | 自訂物品、耐久、附魔 |
 | R2.6 | `Template`／`TemplateStream` 的 id:data 解析與貼上全部走 `ItemManager`；補「藍圖載入完整性」自動檢查 | 2.8.8、2.3.1 |
 | R2.7 | 腳本棘輪設為 0 洩漏，寫入 CI／提交前檢查 | 腳本 |
@@ -113,10 +113,10 @@ R2、R3、R4 是升級的前置；R5 以後可與升級交錯進行。
 | raw-block-id（`getTypeId` 等） | 26 | **0** | 完成 |
 | raw-block-data（`getData/setData`） | 54（多為 `SimpleBlock`／`BlockSnapshot` 的同名方法，屬領域型別） | **0** | 完成 |
 | material-data（`MaterialData`、`org.bukkit.material.*`） | 6 | **0** | 完成（新增 `ItemManager.getDispenserFacing/setSignFacing/reapplyData/copyData`） |
-| durability-as-data（`get/setDurability`） | 27 | 27 | R2.5 |
+| durability-as-data（`get/setDurability`） | 27 | 26 | R2.5 |
 | int-item-stack（`new ItemStack(int,…)`） | 3 | 3 | R2.5 |
-| legacy-material-const（舊命名 `Material` 常數） | 45 | 43 | R2.4（`CivSettings` 的受限方塊／物品清單佔大宗） |
-| material-getid（`Material#getId`） | — | 1 | R2.4（`gpl/ImprovedOfflinePlayer`，屬 NMS，併入 R4） |
+| legacy-material-const（舊命名 `Material` 常數） | 45 | **0** | 完成（新增 `compat/LegacyMaterials`；邊界擴大為 `ItemManager` 與 `compat/`） |
+| material-getid（`Material#getId`） | — | 1 | 併入 R4（`gpl/ImprovedOfflinePlayer`，屬 NMS） |
 
 檢查腳本的限制：grep 看不到型別，`sb`、`bs`、`nextBs`、`nextBlock`、`commandBlock` 等慣用變數名視為 CivCraft 自己的 `SimpleBlock`／`BlockSnapshot` 而略過；若 Bukkit 物件剛好用這些名字會被漏掉。
 
