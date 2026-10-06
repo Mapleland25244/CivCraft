@@ -7,6 +7,7 @@
 # Checks:
 #   tools/check-legacy-api.sh     pre-1.13 API ratchet; runs when Java sources or its baseline are staged (seconds)
 #   tools/check-scheduler.sh      Bukkit scheduler only inside threading/; runs when Java sources are staged (seconds)
+#   tools/check-nms.sh            server internals (net.minecraft.server, craftbukkit) only inside nms/; runs when Java sources are staged (seconds)
 #   tools/scan-templates.sh       legacy block pairs in templates; runs when templates, its tool or its baseline are
 #                                 staged (about a minute, so it is skipped for everything else)
 set -u
@@ -28,6 +29,11 @@ fi
 if [ "$ALL" = 1 ] || touches '^civcraft/src/.*\.java$|^tools/check-scheduler\.sh$'; then
 	echo "[pre-commit] scheduler boundary"
 	bash tools/check-scheduler.sh || status=1
+fi
+
+if [ "$ALL" = 1 ] || touches '^civcraft(_dynmap)?/src/.*\.java$|^tools/check-nms\.sh$'; then
+	echo "[pre-commit] NMS boundary"
+	bash tools/check-nms.sh || status=1
 fi
 
 if [ "$ALL" = 1 ] || touches '^civcraft_data/templates/|^tools/ScanTemplates\.java$|^tools/scan-templates\.sh$|^tools/template-blocks-baseline\.txt$'; then
