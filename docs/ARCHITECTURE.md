@@ -1,8 +1,9 @@
-# CivCraft 架構分析（ARCHITECTURE.md）
+# CivCraft 架構分析
 
+> 更新：2026-10-06 ｜ 性質：**唯讀分析**（未修改既有程式碼）
 > 分析對象：`C:\Minecraft Plugin Development\CivCraft`（分支 `ai-refactor`，基於 `1.8-dev`）
-> 性質：**純唯讀分析**，未修改任何既有程式碼。本文件為唯一新增檔案。
-> 所有數字皆為本次以 grep / 檔案統計取得的實測值，推論之處會標明「推論」。
+> 所有數字皆為 grep／檔案統計的實測值，推論之處標明「推論」。
+> 相關：[ROADMAP](ROADMAP.md) ｜ [測試紀錄](testing/README.md)
 
 ---
 

@@ -1,9 +1,11 @@
-# CivCraft 基準線測試清單（TESTING.md）
+# CivCraft 基準線測試清單
 
-用途：在 **Spigot/Paper 1.12.2** 上記錄目前行為，作為階段 A 每次升級（1.13 → 1.16 → 1.20/1.21）後的回歸對照。
+> 更新：2026-10-06 ｜ 範圍：Spigot/Paper 1.12.2、**改動前**的行為 ｜ 狀態：基準線（不覆蓋）
+> 用途：作為階段 A 每次升級（1.13 → 1.16 → 1.21）與各重構步驟後的回歸對照。
+> 慣例與索引：[README](README.md)
 
-結果欄位填：`PASS` / `FAIL` / `原本就壞`（1.12.2 基準線已壞，非遷移造成）/ `N/A`。
-每一階段複製一份本表另存（例如 `TESTING-1.13.md`），不要覆蓋基準線。
+結果欄位：`PASS` / `FAIL` / `原本就壞`（1.12.2 基準線已壞，非遷移造成）/ `N/A` / `待測`。
+每一階段複製本檔另存（例如 `03-upgrade-1.13.md`），不要覆蓋基準線。
 
 ## 目錄
 
@@ -110,7 +112,7 @@ CivCraft 以 UUID 字串關聯 leader、權限群組、營地 owner、城鎮 out
 | 2.2.2c | `/ad perm` 管理員覆寫（Toxicnnan 已 op） | 非成員可破壞領地內一般方塊 | PASS |
 | 2.2.3 | 爆炸、點燃、活塞、紅石 | 依保護規則處理 | |
 | 2.2.4 | `/here` | 顯示所在領地 | PASS（部分） |
-| 2.2.5 | 超出 WorldBorder 的建築 | 被拒絕 | 見 Phase 1：`TESTING-phase1.md` 2.7.2 |
+| 2.2.5 | 超出 WorldBorder 的建築 | 被拒絕 | 見 Phase 1：[Phase 1 紀錄](01-phase1-integration.md) 2.7.2 |
 
 **實測紀錄**
 - 2.2.2：
@@ -172,7 +174,7 @@ CivCraft 以 UUID 字串關聯 leader、權限群組、營地 owner、城鎮 out
 |---|---|---|---|
 | 2.4.1 | `/pay`、`/econ` | 金額正確 | PASS |
 | 2.4.2 | `global.use_vault=true` | 走 Vault | |
-| 2.4.3 | `global.use_vault=false` | 走內建經濟 | 見 2.4.1；Phase 1 後重測：`TESTING-phase1.md` 2.4.3 |
+| 2.4.3 | `global.use_vault=false` | 走內建經濟 | 見 2.4.1；Phase 1 後重測：[Phase 1 紀錄](01-phase1-integration.md) 2.4.3 |
 | 2.4.4 | `/market buy` | 交易正確 | |
 
 **實測紀錄**
@@ -270,7 +272,7 @@ CivCraft 以 UUID 字串關聯 leader、權限群組、營地 owner、城鎮 out
 | 2.7.9 | dynmap + `civcraft_dynmap` | 邊界繪製 | PASS（啟用） | PASS（啟用） |
 
 **備註**
-- 2.7.2：`Buildable` 缺插件時可能 NoClassDefFoundError（Phase 1 已改走整合層，結果見 `TESTING-phase1.md`）。
+- 2.7.2：`Buildable` 缺插件時可能 NoClassDefFoundError（Phase 1 已改走整合層，結果見 [Phase 1 紀錄](01-phase1-integration.md)）。
 - 2.7.3：`Town` 直接引用 iTag（Phase 1 已改走整合層）。
 - 2.7.8：hard depend。CustomMobs 4.17 在 1.12.2 自行停用，見第 4 節。
 - 2.7.9：
@@ -608,7 +610,7 @@ CivCraft 以 UUID 字串關聯 leader、權限群組、營地 owner、城鎮 out
 | （未註明） | `TaskMaster.cancelTimer` 取消不到計時器 | 從 `tasks` 而非 `timers` 取值 | 待修 |
 | 2026-10-05 | `/reload` 後日誌出現 `Nag author … not properly shutting down its async tasks` ×2 | `CivCraft.onDisable` 只呼叫 `SQLUpdate.save()`，沒有取消排程任務；`/reload` 後舊任務（含 `SQLUpdate` 無限迴圈）與新任務並存。Spigot 本就不支援 `/reload` | 原本就壞；Scheduler 介面（階段 A 步驟 3）時一併處理。測試時請勿使用 `/reload`，一律 `stop` 後重啟 |
 | 2026-10-05 | `/reload` 時 `Failed to save player data for Mapleland25244 / Toxicnnan` | 原因不明，發生在 `/reload` 的插件關閉階段，與 CivCraft 是否有關**未驗證** | 不再用 `/reload`，若 `stop` 重啟仍出現再查 |
-| 2026-10-05 | **伺服器崩潰**（23:17:44，`crash-reports/crash-2026-10-05_23.17.44-server.txt`）：`ReportedException: Exception ticking world` ← `ClassNotFoundException: de.hellfirepvp.api.CustomMobsAPI`，堆疊 `MobSpawner.setActive:142` ← `MobSpawner.<init>:37` ← `MobSpawnerPopulator.buildMobSpawner:35` ← `populate:193`（產生新區塊時） | CustomMobs 4.17 在 1.12.2 自行停用，其類別不再可用；但 `MobSpawner.setActive` 無條件呼叫 `CustomMobsAPI.getSpawnerEditor()`，`MobSpawnerPopulator.populate` 也沒有檢查 `hasCustomMobs`；`CivSettings` 只用 `hasPlugin`（插件存在，不代表已啟用）判斷。玩家探索到預選的魔物生成點區塊就會崩潰 | 原本就壞（環境觸發）。待修：以 `isPluginEnabled("CustomMobs")` 判斷，並在 `setActive` / `populate` 加上保護。**2026-10-06 00:33:14 再次崩潰**（`crash-2026-10-06_00.33.14-server.txt`，這次顯示為 `NoClassDefFoundError`，同一路徑），距上次約 75 分鐘，由玩家探索新區域觸發；兩次都是 Spigot 的正常關服流程，資料有存檔。「避免探索」不可靠。**Phase 1 後：偵測改為「已啟用」，使用者回報不再崩潰（見 `TESTING-phase1.md`）** |
+| 2026-10-05 | **伺服器崩潰**（23:17:44，`crash-reports/crash-2026-10-05_23.17.44-server.txt`）：`ReportedException: Exception ticking world` ← `ClassNotFoundException: de.hellfirepvp.api.CustomMobsAPI`，堆疊 `MobSpawner.setActive:142` ← `MobSpawner.<init>:37` ← `MobSpawnerPopulator.buildMobSpawner:35` ← `populate:193`（產生新區塊時） | CustomMobs 4.17 在 1.12.2 自行停用，其類別不再可用；但 `MobSpawner.setActive` 無條件呼叫 `CustomMobsAPI.getSpawnerEditor()`，`MobSpawnerPopulator.populate` 也沒有檢查 `hasCustomMobs`；`CivSettings` 只用 `hasPlugin`（插件存在，不代表已啟用）判斷。玩家探索到預選的魔物生成點區塊就會崩潰 | 原本就壞（環境觸發）。待修：以 `isPluginEnabled("CustomMobs")` 判斷，並在 `setActive` / `populate` 加上保護。**2026-10-06 00:33:14 再次崩潰**（`crash-2026-10-06_00.33.14-server.txt`，這次顯示為 `NoClassDefFoundError`，同一路徑），距上次約 75 分鐘，由玩家探索新區域觸發；兩次都是 Spigot 的正常關服流程，資料有存檔。「避免探索」不可靠。**Phase 1 後：偵測改為「已啟用」，使用者回報不再崩潰（見 [Phase 1 紀錄](01-phase1-integration.md)）** |
 | 2026-10-05 | 客戶端每次進服都在主執行緒丟 `NullPointerException`（`brz.a` 內 `forEach`，之後才出現 `Loaded N advancements`） | 未知；混淆碼看不出來源，推測與配方或進階清單封包有關，**尚未驗證**。需用「移除 CivCraft」對照，確認是不是插件造成 | 2026-10-06 Toxicnnan 的戰爭測試日誌**又大量出現**（每次出現後 `Loaded N advancements` 的數字增加，24 → 26），所以與 Resident 狀態無關；更可能與進度（advancement）封包有關。屬客戶端錯誤，不影響遊戲，Phase 4 升級 API 後再觀察 |
 
 ### 4.5 環境與外部插件
@@ -633,4 +635,4 @@ CivCraft 以 UUID 字串關聯 leader、權限群組、營地 owner、城鎮 out
 | 日期 | 現象 | 原因（若已知） | 狀態 |
 |---|---|---|---|
 | 2026-10-06 | `plugin.yml` 寫成 `softdepends`，Bukkit 不認，TitleAPI 從未真正是 softdepend | 鍵名錯字（應為 `softdepend`） | 已修（Phase 1），並補上其他可選插件 |
-| 2026-10-06 | 非盟友文明玩家被 WorldBorder 推回時，CivCraft 回 `You must be allies in order to Teleport into Civ …`，玩家留在邊界外 | WorldBorder 以傳送推回，目的地在別國領地，被 CivCraft 傳送限制否決 | 既有互動，與 Phase 1 無關；詳見 `TESTING-phase1.md` |
+| 2026-10-06 | 非盟友文明玩家被 WorldBorder 推回時，CivCraft 回 `You must be allies in order to Teleport into Civ …`，玩家留在邊界外 | WorldBorder 以傳送推回，目的地在別國領地，被 CivCraft 傳送限制否決 | 既有互動，與 Phase 1 無關；詳見 [Phase 1 紀錄](01-phase1-integration.md) |

@@ -11,6 +11,12 @@ Installation Instructions
 ==========================
 See INSTALL.txt
 
+Documentation
+=============
+- docs/ARCHITECTURE.md : architecture analysis
+- docs/ROADMAP.md : refactoring and upgrade roadmap (target: Paper 1.21.x)
+- docs/testing/README.md : test records and conventions
+
 Credits
 =======
 AvRGaming LLC
