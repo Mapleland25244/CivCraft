@@ -96,7 +96,6 @@ public class WarRegen {
 				inv = ((Dispenser)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
-			case BURNING_FURNACE:
 			case FURNACE:
 				inv = ((Furnace)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
@@ -110,7 +109,6 @@ public class WarRegen {
 				str += blockInventoryString(inv);
 				break;
 			case SIGN:
-			case SIGN_POST:
 			case WALL_SIGN:
 				Sign sign = (Sign)blk.getState();
 				str += blockSignString(sign);
@@ -153,7 +151,6 @@ public class WarRegen {
 			inv = ((Dispenser)block.getState()).getInventory();
 			InventorySerializer.StringToInventory(inv, split[6]);
 			break;
-		case BURNING_FURNACE:
 		case FURNACE:
 			inv = ((Furnace)block.getState()).getInventory();
 			InventorySerializer.StringToInventory(inv, split[6]);
@@ -167,7 +164,6 @@ public class WarRegen {
 			InventorySerializer.StringToInventory(inv, split[6]);
 			break;
 		case SIGN:
-		case SIGN_POST:
 		case WALL_SIGN:
 			Sign sign = (Sign)block.getState();
 			String[] messages = split[6].split(",");
@@ -187,7 +183,7 @@ public class WarRegen {
 	public static void explodeThisBlock(Block blk, String file) {
 
 		switch (blk.getType()) {
-		case SIGN_POST:
+		case SIGN:
 			return;
 		case WALL_SIGN:
 			return;
@@ -209,7 +205,6 @@ public class WarRegen {
 		case DISPENSER:
 			((Dispenser)blk.getState()).getInventory().clear();
 			break;
-		case BURNING_FURNACE:
 		case FURNACE:
 			((Furnace)blk.getState()).getInventory().clear();
 			break;
@@ -242,7 +237,6 @@ public class WarRegen {
 		case DISPENSER:
 			((Dispenser)blk.getState()).getInventory().clear();
 			break;
-		case BURNING_FURNACE:
 		case FURNACE:
 			((Furnace)blk.getState()).getInventory().clear();
 			break;
@@ -285,6 +279,8 @@ public class WarRegen {
 		
 	    try {
 			String filepath = "templates/war/"+name;
+			// a fresh server has no templates/war folder; without it every block of a blast fails to save
+			new File(filepath).getParentFile().mkdirs();
 			FileWriter fstream = new FileWriter(filepath,true);
 			BufferedWriter out = new BufferedWriter(fstream);
 			out.append(blockToString(blk, save_as_air)+"\n");

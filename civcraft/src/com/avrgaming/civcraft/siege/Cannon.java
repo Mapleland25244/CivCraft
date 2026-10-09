@@ -58,7 +58,7 @@ public class Cannon extends Buildable {
 	private Location cannonLocation;
 	private Vector direction = new Vector(0,0,0);
 
-	public static final String RESTORE_NAME = "special:Cannons";
+	public static final String RESTORE_NAME = "special_Cannons";
 	public static final double STEP = 1.0f;
 
 	public static final byte WALLSIGN_EAST = 0x5;
@@ -244,6 +244,10 @@ public class Cannon extends Buildable {
 	}
 	
 	private void updateAngleSign(Block block) {
+		/* A blast may have destroyed the sign; there is nothing to update then. */
+		if (!(block.getState() instanceof Sign)) {
+			return;
+		}
 		Sign sign = (Sign)block.getState();
 		sign.setLine(0, "YAW");
 		sign.setLine(1, ""+this.angle);
@@ -263,6 +267,10 @@ public class Cannon extends Buildable {
 	}
 	
 	private void updatePowerSign(Block block) {
+		/* A blast may have destroyed the sign; there is nothing to update then. */
+		if (!(block.getState() instanceof Sign)) {
+			return;
+		}
 		Sign sign = (Sign)block.getState();
 		sign.setLine(0, "PITCH");
 		sign.setLine(1, ""+this.power);
@@ -272,6 +280,10 @@ public class Cannon extends Buildable {
 	}
 	
 	private void updateFireSign(Block block) {
+		/* A blast may have destroyed the sign; there is nothing to update then. */
+		if (!(block.getState() instanceof Sign)) {
+			return;
+		}
 		Sign sign = (Sign)block.getState();
 		sign.setLine(0, CivSettings.localize.localizedString("cannon_fire"));
 		boolean loaded = false;

@@ -37,7 +37,7 @@ import com.avrgaming.civcraft.util.ItemManager;
 
 public class WarListener implements Listener {
 
-	public static final String RESTORE_NAME = "special:TNT";
+	public static final String RESTORE_NAME = "special_TNT";
 	ChunkCoord coord = new ChunkCoord();
 	
 	public static int yield;
@@ -75,7 +75,7 @@ public class WarListener implements Listener {
 		}
 				
 		if (event.getBlock().getType().equals(Material.DIRT) || 
-			event.getBlock().getType().equals(Material.GRASS) ||
+			event.getBlock().getType().equals(Material.GRASS_BLOCK) ||
 			event.getBlock().getType().equals(Material.SAND) ||
 			event.getBlock().getType().equals(Material.GRAVEL) ||
 			event.getBlock().getType().equals(Material.TORCH) ||
@@ -119,7 +119,7 @@ public class WarListener implements Listener {
 		}
 				
 		if (event.getBlock().getType().equals(Material.DIRT) || 
-			event.getBlock().getType().equals(Material.GRASS) ||
+			event.getBlock().getType().equals(Material.GRASS_BLOCK) ||
 			event.getBlock().getType().equals(Material.SAND) ||
 			event.getBlock().getType().equals(Material.GRAVEL) ||
 			event.getBlock().getType().equals(Material.TORCH) ||

@@ -55,7 +55,7 @@ import com.avrgaming.civcraft.war.WarRegen;
 
 public class WarCamp extends Buildable implements RespawnLocationHolder {
 
-	public static final String RESTORE_NAME = "special:WarCamps";
+	public static final String RESTORE_NAME = "special_WarCamps";
 	private ArrayList<BlockCoord> respawnPoints = new ArrayList<BlockCoord>();
 	protected HashMap<BlockCoord, ControlPoint> controlPoints = new HashMap<BlockCoord, ControlPoint>();
 
