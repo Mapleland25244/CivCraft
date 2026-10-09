@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.components;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.util.HashSet;
 
 import com.avrgaming.civcraft.object.CultureChunk;
@@ -26,7 +27,7 @@ public class AttributeBiome extends AttributeBiomeBase {
 			return 0;
 		}
 		
-		if (!biomeList.contains(cc.getBiome().name().toUpperCase())) {
+		if (!biomeList.contains(LegacyBiomes.toName(cc.getBiome()).toUpperCase())) {
 			return 0;
 		}
 		

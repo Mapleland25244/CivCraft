@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.trade;
 
+import com.avrgaming.civcraft.compat.LegacyIds;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -218,7 +219,7 @@ public class TradeInventoryListener implements Listener {
 		ItemStack guiStack;
 		if (pair.coins == 0) {
 			guiStack = LoreGuiItem.build(""+CivSettings.CURRENCY_NAME+" "+CivSettings.localize.localizedString("resident_tradeOffered"), 
-					ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+					LegacyIds.NETHER_BRICK_ITEM, 0, 
 					CivColor.Yellow+"0 "+CivSettings.CURRENCY_NAME);
 		} else {
 			guiStack = LoreGuiItem.build(""+CivSettings.CURRENCY_NAME+" "+CivSettings.localize.localizedString("resident_tradeOffered"), 

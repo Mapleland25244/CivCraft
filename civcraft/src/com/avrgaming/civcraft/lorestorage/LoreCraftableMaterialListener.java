@@ -219,11 +219,11 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 				
 				return;
@@ -267,11 +267,11 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 				
 				return;
@@ -279,7 +279,7 @@ public class LoreCraftableMaterialListener implements Listener {
 				if(!LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is not custom, but recipie is. Set to blank. */
 					if (!loreMat.isVanilla()) {
-						event.getInventory().setResult(new ItemStack(CivData.AIR));
+						event.getInventory().setResult(new ItemStack(Material.AIR));
 						return;
 					}
 				}

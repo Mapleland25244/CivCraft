@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.structure.farm;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,7 +70,7 @@ public class FarmChunk {
 		this.town = t;
 		this.struct = struct;
 		this.coord = new ChunkCoord(c);
-		biomeName = coord.getChunk().getBlock(8, 64, 8).getBiome().name();
+		biomeName = LegacyBiomes.toName(coord.getChunk().getBlock(8, 64, 8).getBiome());
 	}
 	
 	public Chunk getChunk() {

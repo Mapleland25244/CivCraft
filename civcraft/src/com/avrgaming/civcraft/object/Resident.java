@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.object;
 
+import com.avrgaming.civcraft.compat.LegacyIds;
 import gpl.InventorySerializer;
 
 import java.io.BufferedWriter;
@@ -754,7 +755,7 @@ public class Resident extends SQLObject {
 	public int takeItemsInHand(int itemId, int itemData) throws CivException {
 		Player player = CivGlobal.getPlayer(this);
 		Inventory inv = player.getInventory();
-		if (!inv.contains(itemId)) {
+		if (!inv.contains(ItemManager.getItemMaterial(itemId, itemData))) {
 			return 0;
 		}
 
@@ -777,7 +778,7 @@ public class Resident extends SQLObject {
 		Player player = CivGlobal.getPlayer(this);
 		Inventory inv = player.getInventory();
 	
-		if (!inv.contains(itemId)) {
+		if (!inv.contains(ItemManager.getItemMaterial(itemId, itemData))) {
 			return false;
 		}
 
@@ -805,15 +806,15 @@ public class Resident extends SQLObject {
 		Player player = CivGlobal.getPlayer(this);
 		Inventory inv = player.getInventory();
 	
-		if (!inv.contains(itemId)) {
+		if (!inv.contains(ItemManager.getItemMaterial(itemId, itemData))) {
 			return false;
 		}
 		
 		HashMap<Integer, ? extends ItemStack> stacks;
-		stacks = inv.all(itemId);
+		stacks = inv.all(ItemManager.getItemMaterial(itemId, itemData));
 		
 		for (ItemStack stack : stacks.values()) {
-			if (ItemManager.getData(stack.getData()) != (byte)itemData) {
+			if (ItemManager.getData(stack) != itemData) {
 				continue;
 			}
 			
@@ -1438,7 +1439,7 @@ public class Resident extends SQLObject {
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 7) {
 					ItemStack guiStack = LoreGuiItem.build(CivSettings.CURRENCY_NAME+" "+CivSettings.localize.localizedString("resident_tradeOffered"), 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							LegacyIds.NETHER_BRICK_ITEM, 0, 
 							CivColor.Yellow+"0 "+CivSettings.CURRENCY_NAME);
 					inv.setItem(i, guiStack);
 				} else {
@@ -1456,7 +1457,7 @@ public class Resident extends SQLObject {
 					
 				} else if ((i-start) == 0){ 
 					ItemStack guiStack = LoreGuiItem.build(CivSettings.localize.localizedString("resident_tradeRemove")+" "+CivSettings.CURRENCY_NAME, 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							LegacyIds.NETHER_BRICK_ITEM, 0, 
 							CivColor.Gold+CivSettings.localize.localizedString("resident_tradeRemove100")+" "+CivSettings.CURRENCY_NAME,
 							CivColor.Gold+CivSettings.localize.localizedString("resident_tradeRemove1000")+" "+CivSettings.CURRENCY_NAME);
 					inv.setItem(i, guiStack);
@@ -1468,7 +1469,7 @@ public class Resident extends SQLObject {
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 7) {
 					ItemStack guiStack = LoreGuiItem.build(CivSettings.CURRENCY_NAME+" "+CivSettings.localize.localizedString("resident_tradeOffered"), 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							LegacyIds.NETHER_BRICK_ITEM, 0, 
 							CivColor.Yellow+"0 "+CivSettings.CURRENCY_NAME);
 					inv.setItem(i, guiStack);
 				}

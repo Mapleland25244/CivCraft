@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.command.debug;
 
+import com.avrgaming.anticheat.ACManager;
 import gpl.AttributeUtil;
 
 import java.io.IOException;
@@ -265,6 +266,9 @@ public class DebugCommand extends CommandBase {
 	
 	public void packet_cmd() throws CivException {
 		Player player = getPlayer();
+		if (!ACManager.isEnabled()) {
+			throw new CivException("CivCraftAC is disabled on this server version.");
+		}
 		player.sendPluginMessage(CivCraft.getPlugin(), "CAC", "Test Message".getBytes());
 		CivMessage.sendSuccess(player, "Sent test message");
 	}

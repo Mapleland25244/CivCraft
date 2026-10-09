@@ -186,7 +186,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				if (ItemManager.getId(stack) == CivData.STONE) {
 
 					if (this.trommel.getLevel() >= 2 && ItemManager.getData(stack) == 
-							ItemManager.getData(ItemManager.getMaterialData(CivData.STONE, CivData.GRANITE))) {
+							ItemManager.getData(ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.GRANITE))) {
 						try {
 							this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.GRANITE));
 						} catch (InterruptedException e) {
@@ -263,7 +263,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						break;
 					}
 					if (this.trommel.getLevel() >= 3 && ItemManager.getData(stack) == 
-							ItemManager.getData(ItemManager.getMaterialData(CivData.STONE, CivData.DIORITE))) {
+							ItemManager.getData(ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.DIORITE))) {
 						try {
 							this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.DIORITE));
 						} catch (InterruptedException e) {
@@ -339,7 +339,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						break;
 					}
 					if (this.trommel.getLevel() >= 4 && ItemManager.getData(stack) == 
-							ItemManager.getData(ItemManager.getMaterialData(CivData.STONE, CivData.ANDESITE))) {
+							ItemManager.getData(ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.ANDESITE))) {
 						try {
 							this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(CivData.STONE, 1, (short) CivData.ANDESITE));
 						} catch (InterruptedException e) {

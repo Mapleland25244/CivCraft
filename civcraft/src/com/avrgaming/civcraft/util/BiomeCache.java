@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.util;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -83,12 +84,12 @@ public class BiomeCache {
 					ps = context.prepareStatement("INSERT INTO `"+SQL.tb_prefix+TABLE_NAME+"` (`key`, `value`) VALUES (?, ?)"+
 							" ON DUPLICATE KEY UPDATE `value` = ?");
 					ps.setString(1, cc.getChunkCoord().toString());
-					ps.setString(2, cc.getBiome().name());
-					ps.setString(3, cc.getBiome().name());
+					ps.setString(2, LegacyBiomes.toName(cc.getBiome()));
+					ps.setString(3, LegacyBiomes.toName(cc.getBiome()));
 				
 					int rs = ps.executeUpdate();
 					if (rs == 0) {
-						CivLog.error("Couldn't update biome cache for key:"+cc.getChunkCoord().toString()+" with value: "+cc.getBiome().name());
+						CivLog.error("Couldn't update biome cache for key:"+cc.getChunkCoord().toString()+" with value: "+LegacyBiomes.toName(cc.getBiome()));
 					}
 					
 				} catch (SQLException e) {
@@ -110,7 +111,7 @@ public class BiomeCache {
 	
 	public static Biome getBiome(CultureChunk cc) {
 		if (biomeCache.containsKey(cc.getChunkCoord().toString())) {
-			return Biome.valueOf(biomeCache.get(cc.getChunkCoord().toString()));
+			return LegacyBiomes.fromName(biomeCache.get(cc.getChunkCoord().toString()));
 		} else {
 			class SyncTask implements Runnable {
 				CultureChunk cc;
@@ -128,7 +129,7 @@ public class BiomeCache {
 			}
 			
 			TaskMaster.syncTask(new SyncTask(cc));
-			return Biome.HELL;
+			return LegacyBiomes.fromName("HELL");
 		}
 	}
 	

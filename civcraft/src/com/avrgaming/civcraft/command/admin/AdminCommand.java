@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.command.admin;
 
+import com.avrgaming.civcraft.compat.LegacyIds;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -170,7 +171,7 @@ public class AdminCommand extends CommandBase {
 			for (ConfigMaterialCategory cat : ConfigMaterialCategory.getCategories()) {
 				int identifier;
 				if (cat.name.contains("Fish")) {
-					identifier = ItemManager.getId(Material.RAW_FISH);
+					identifier = LegacyIds.RAW_FISH;
 				}
 				else if (cat.name.contains("Catalyst")) {
 					identifier = ItemManager.getId(Material.BOOK);
@@ -179,13 +180,13 @@ public class AdminCommand extends CommandBase {
 					identifier = ItemManager.getId(Material.IRON_SWORD);
 				}
 				else if (cat.name.contains("Materials")) {
-					identifier = ItemManager.getId(Material.WOOD_STEP);
+					identifier = LegacyIds.WOOD_STEP;
 				}
 				else if (cat.name.contains("Tools")) {
-					identifier = ItemManager.getId(Material.IRON_SPADE);
+					identifier = LegacyIds.IRON_SPADE;
 				}
 				else if (cat.name.contains("Eggs")) {
-					identifier = ItemManager.getId(Material.MONSTER_EGG);
+					identifier = LegacyIds.MONSTER_EGG;
 				}
 				else {
 					identifier = ItemManager.getId(Material.WRITTEN_BOOK);

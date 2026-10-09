@@ -111,7 +111,7 @@ public class SimpleBlock {
 	
 	@SuppressWarnings("deprecation")
 	public Material getMaterial() {
-		return Material.getMaterial(type);
+		return ItemManager.getMaterial(type);
 	}
 	
 	/**

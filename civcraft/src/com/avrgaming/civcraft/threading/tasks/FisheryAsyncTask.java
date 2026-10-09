@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.threading.tasks;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -271,69 +272,69 @@ public class FisheryAsyncTask extends CivAsyncTask {
 		Biome biome = this.fishHatchery.getBiome();
 		
 		if (biome.equals(Biome.BIRCH_FOREST_HILLS) ||
-				biome.equals(Biome.MUTATED_BIRCH_FOREST) ||
-				biome.equals(Biome.MUTATED_BIRCH_FOREST_HILLS) ||
-				biome.equals(Biome.MUTATED_TAIGA_COLD) ||
-				biome.equals(Biome.MUTATED_EXTREME_HILLS) ||
-				biome.equals(Biome.MUTATED_EXTREME_HILLS_WITH_TREES ) ||
-				biome.equals(Biome.ICE_MOUNTAINS) ||
-				biome.equals(Biome.MUTATED_JUNGLE_EDGE) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_BIRCH_FOREST")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_BIRCH_FOREST_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_TAIGA_COLD")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_EXTREME_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_EXTREME_HILLS_WITH_TREES") ) ||
+				biome.equals(LegacyBiomes.fromName("ICE_MOUNTAINS")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_JUNGLE_EDGE")) ||
 				biome.equals(Biome.JUNGLE_HILLS) ||
-				biome.equals(Biome.MUTATED_JUNGLE) ||
-				biome.equals(Biome.MUTATED_MESA) ||
-				biome.equals(Biome.MUTATED_MESA_CLEAR_ROCK) ||
-				biome.equals(Biome.MUTATED_MESA_CLEAR_ROCK) ||
-				biome.equals(Biome.MUTATED_MESA_ROCK) ||
-				biome.equals(Biome.MUTATED_SAVANNA) ||
-				biome.equals(Biome.MUTATED_SAVANNA_ROCK) ||
-				biome.equals(Biome.SMALLER_EXTREME_HILLS) ||
-				biome.equals(Biome.MUTATED_SWAMPLAND) ||
-				biome.equals(Biome.MUTATED_TAIGA))
+				biome.equals(LegacyBiomes.fromName("MUTATED_JUNGLE")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_MESA")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_MESA_CLEAR_ROCK")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_MESA_CLEAR_ROCK")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_MESA_ROCK")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_SAVANNA")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_SAVANNA_ROCK")) ||
+				biome.equals(LegacyBiomes.fromName("SMALLER_EXTREME_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_SWAMPLAND")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_TAIGA")))
 		{
 			return 1;
 		}
 		else if (biome.equals(Biome.BIRCH_FOREST) ||
-				biome.equals(Biome.EXTREME_HILLS) ||
+				biome.equals(LegacyBiomes.fromName("EXTREME_HILLS")) ||
 				biome.equals(Biome.FOREST) ||
-				biome.equals(Biome.FOREST_HILLS) ||
-				biome.equals(Biome.ICE_FLATS) ||
-				biome.equals(Biome.ICE_MOUNTAINS) ||
-				biome.equals(Biome.MUTATED_ICE_FLATS) ||
+				biome.equals(LegacyBiomes.fromName("FOREST_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("ICE_FLATS")) ||
+				biome.equals(LegacyBiomes.fromName("ICE_MOUNTAINS")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_ICE_FLATS")) ||
 				biome.equals(Biome.JUNGLE) ||
 				biome.equals(Biome.JUNGLE_EDGE) ||
-				biome.equals(Biome.MUTATED_REDWOOD_TAIGA) ||
-				biome.equals(Biome.MUTATED_REDWOOD_TAIGA_HILLS) ||
-				biome.equals(Biome.REDWOOD_TAIGA) ||
-				biome.equals(Biome.REDWOOD_TAIGA_HILLS) ||
-				biome.equals(Biome.ROOFED_FOREST) ||
-				biome.equals(Biome.MESA) ||
-				biome.equals(Biome.MESA_CLEAR_ROCK) ||
-				biome.equals(Biome.MESA_ROCK ) ||
-				biome.equals(Biome.EXTREME_HILLS_WITH_TREES) ||
-				biome.equals(Biome.ROOFED_FOREST) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_REDWOOD_TAIGA")) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_REDWOOD_TAIGA_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("REDWOOD_TAIGA")) ||
+				biome.equals(LegacyBiomes.fromName("REDWOOD_TAIGA_HILLS")) ||
+				biome.equals(LegacyBiomes.fromName("ROOFED_FOREST")) ||
+				biome.equals(LegacyBiomes.fromName("MESA")) ||
+				biome.equals(LegacyBiomes.fromName("MESA_CLEAR_ROCK")) ||
+				biome.equals(LegacyBiomes.fromName("MESA_ROCK") ) ||
+				biome.equals(LegacyBiomes.fromName("EXTREME_HILLS_WITH_TREES")) ||
+				biome.equals(LegacyBiomes.fromName("ROOFED_FOREST")) ||
 				biome.equals(Biome.SAVANNA) ||
-				biome.equals(Biome.SAVANNA_ROCK) ||
+				biome.equals(LegacyBiomes.fromName("SAVANNA_ROCK")) ||
 				biome.equals(Biome.TAIGA) ||
 				biome.equals(Biome.TAIGA_HILLS))
 		{
 			return 2;
 		}
-		else if (biome.equals(Biome.BEACHES) ||
-				biome.equals(Biome.COLD_BEACH) ||
-				biome.equals(Biome.TAIGA_COLD) ||
+		else if (biome.equals(LegacyBiomes.fromName("BEACHES")) ||
+				biome.equals(LegacyBiomes.fromName("COLD_BEACH")) ||
+				biome.equals(LegacyBiomes.fromName("TAIGA_COLD")) ||
 				biome.equals(Biome.DEEP_OCEAN) ||
 				biome.equals(Biome.DESERT) ||
 				biome.equals(Biome.DESERT_HILLS) ||
-				biome.equals(Biome.MUTATED_DESERT) ||
+				biome.equals(LegacyBiomes.fromName("MUTATED_DESERT")) ||
 				biome.equals(Biome.FROZEN_OCEAN) ||
 				biome.equals(Biome.FROZEN_RIVER) ||
-				biome.equals(Biome.MUSHROOM_ISLAND) ||
-				biome.equals(Biome.MUSHROOM_ISLAND_SHORE) ||
+				biome.equals(LegacyBiomes.fromName("MUSHROOM_ISLAND")) ||
+				biome.equals(LegacyBiomes.fromName("MUSHROOM_ISLAND_SHORE")) ||
 				biome.equals(Biome.OCEAN) ||
 				biome.equals(Biome.PLAINS) ||
 				biome.equals(Biome.RIVER) ||
-				biome.equals(Biome.STONE_BEACH) ||
-				biome.equals(Biome.SWAMPLAND) )
+				biome.equals(LegacyBiomes.fromName("STONE_BEACH")) ||
+				biome.equals(LegacyBiomes.fromName("SWAMPLAND")) )
 		{
 			return 3;
 		}

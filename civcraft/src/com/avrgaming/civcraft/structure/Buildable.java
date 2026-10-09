@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.structure;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -836,9 +837,9 @@ public abstract class Buildable extends SQLObject {
 		
 		if (this.getConfigId().equals("s_shipyard") || this.getConfigId().equals("s_arrowship") || this.getConfigId().equals("s_scoutship") || this.getConfigId().equals("s_cannonship") || this.getConfigId().equals("ti_tradeship") || this.getConfigId().equals("w_grand_ship_ingermanland")) {
 			if (!centerBlock.getBiome().equals(Biome.OCEAN) && 
-				!centerBlock.getBiome().equals(Biome.BEACHES) &&
-				!centerBlock.getBiome().equals(Biome.STONE_BEACH) &&
-				!centerBlock.getBiome().equals(Biome.COLD_BEACH) &&
+				!centerBlock.getBiome().equals(LegacyBiomes.fromName("BEACHES")) &&
+				!centerBlock.getBiome().equals(LegacyBiomes.fromName("STONE_BEACH")) &&
+				!centerBlock.getBiome().equals(LegacyBiomes.fromName("COLD_BEACH")) &&
 				!centerBlock.getBiome().equals(Biome.DEEP_OCEAN) &&
 				!centerBlock.getBiome().equals(Biome.RIVER) &&
 				!centerBlock.getBiome().equals(Biome.FROZEN_OCEAN) &&

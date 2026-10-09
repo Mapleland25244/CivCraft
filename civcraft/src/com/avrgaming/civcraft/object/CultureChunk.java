@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.object;
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
@@ -118,7 +119,7 @@ public class CultureChunk {
 	
 	public ConfigCultureBiomeInfo getCultureBiomeInfo() {
 		if (this.biome != null) {
-			ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(this.biome.name());
+			ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(LegacyBiomes.toName(this.biome));
 			return info;
 		} else {
 			// This can happen within 1 tick of the chunk being created, that's OK. 
@@ -183,7 +184,7 @@ public class CultureChunk {
 		Biome biome = getBiomeFromLocation(player.getLocation());
 		
 		CultureChunk cc = CivGlobal.getCultureChunk(new ChunkCoord(player.getLocation()));
-		ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(biome.name());
+		ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(LegacyBiomes.toName(biome));
 	//	CivLog.debug("showing info.");
 		
 		if (cc == null) {

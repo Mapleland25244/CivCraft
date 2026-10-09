@@ -19,6 +19,7 @@
 package com.avrgaming.civcraft.command.town;
 
 
+import com.avrgaming.civcraft.compat.LegacyBiomes;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -291,7 +292,7 @@ public class TownCommand extends CommandBase {
 				biomes.put(biome.name(), value+1);
 			}
 			
-			ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(biome.name());
+			ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(LegacyBiomes.toName(biome));
 			
 		//	coins += info.coins;
 			hammers += info.hammers;

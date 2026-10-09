@@ -335,7 +335,12 @@ public class CivSettings {
 		
 		try {
 			String materialName = CivSettings.getString(structureConfig, "previewBlock");
-			previewMaterial = Material.getMaterial(materialName);
+			Material configured = Material.getMaterial(materialName);
+			if (configured != null) {
+				previewMaterial = configured;
+			} else {
+				CivLog.warning("Unknown previewBlock '"+materialName+"', defaulting to Glass.");
+			}
 		} catch (InvalidConfiguration e) {
 			CivLog.warning("Unable to change Preview Block. Defaulting to Glass.");
 		}

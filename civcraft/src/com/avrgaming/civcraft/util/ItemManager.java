@@ -7,29 +7,40 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.MaterialData;
+
+import com.avrgaming.civcraft.compat.LegacyBridge;
+import com.avrgaming.civcraft.compat.LegacyEnchantments;
 
 
 /*
- * The ItemManager class is going to be used to wrap itemstack operations that have now
- * been deprecated by Bukkit. If bukkit ever actually takes these methods away from us,
- * we'll just have to use NMS or be a little creative. Doing it on spot (here) will be 
- * better than having fragile code scattered everywhere. 
- * 
- * Additionally it gives us an opportunity to unit test certain item operations that we
- * want to use with our new custom item stacks.
+ * The ItemManager class is the boundary between CivCraft's stored "numeric id : data" pairs (blueprints,
+ * materials.yml, the database) and the server's materials. Callers keep passing and receiving the old pairs;
+ * this class (through LegacyBridge) converts them. Nothing else may use Bukkit's legacy id API.
  */
 
 public class ItemManager {
 
-	@SuppressWarnings("deprecation")
+	/** Items whose old data is wear (tools, armor) rather than a variant. */
+	private static boolean isDamageable(int typeId) {
+		Material legacy = LegacyBridge.legacyMaterial(typeId);
+		return legacy != null && legacy.getMaxDurability() > 0;
+	}
+
 	public static ItemStack createItemStack(int typeId, int amount, short damage) {
-		return new ItemStack(typeId, amount, damage);
+		Material material = LegacyBridge.itemMaterial(typeId, damage);
+		if (isDamageable(typeId)) {
+			return new ItemStack(material, amount, damage);
+		}
+		return new ItemStack(material, amount);
 	}
 
 	public static ItemStack createItemStack(int typeId, int amount) {
@@ -37,102 +48,102 @@ public class ItemManager {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static MaterialData getMaterialData(int type_id, int data) {
-		return new MaterialData(type_id, (byte)data);
-	}
-	
-	@SuppressWarnings("deprecation")
 	public static Enchantment getEnchantById(int id) {
-		return Enchantment.getById(id);
+		return LegacyEnchantments.fromId(id);
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static int getId(Material material) {
-		return material.getId();
+		return LegacyBridge.idOf(material);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static int getId(Enchantment e) {
-		return e.getId();
+		return LegacyEnchantments.toId(e);
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static int getId(ItemStack stack) {
-		return stack.getTypeId();
+		return LegacyBridge.idOf(stack.getType());
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static int getId(Block block) {
-		return block.getTypeId();
+		return LegacyBridge.idOf(block.getBlockData());
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static void setTypeId(Block block, int typeId) {
-		block.setTypeId(typeId);
+		block.setBlockData(LegacyBridge.blockData(typeId, 0), true);
+		BlockConnections.update(block);
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static void setTypeId(BlockState block, int typeId) {
-		block.setTypeId(typeId);
+		block.setBlockData(LegacyBridge.blockData(typeId, 0));
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static byte getData(Block block) {
-		return block.getData();
+		BlockData blockData = block.getBlockData();
+		return (byte) LegacyBridge.dataOf(blockData, block.getData());
 	}
-	
+
+	/** Variant of an item (old data), or its wear for tools and armor. */
 	public static short getData(ItemStack stack) {
-		return stack.getDurability();
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static byte getData(MaterialData data) {
-		return data.getData();
+		if (stack.getType().getMaxDurability() > 0) {
+			return stack.getDurability();
+		}
+		return (short) LegacyBridge.variantOf(stack.getType());
 	}
 
 	@SuppressWarnings("deprecation")
 	public static byte getData(BlockState state) {
-		return state.getRawData();
+		return (byte) LegacyBridge.dataOf(state.getBlockData(), state.getRawData());
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static void setData(Block block, int data) {
-		block.setData((byte)data);
+		setData(block, data, true);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void setData(Block block, int data, boolean update) {
-		block.setData((byte) data, update);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static Material getMaterial(int material) {
-		return Material.getMaterial(material);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static int getBlockTypeId(ChunkSnapshot snapshot, int x, int y, int z) {
-		return snapshot.getBlockTypeId(x, y, z);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static int getBlockData(ChunkSnapshot snapshot, int x, int y, int z) {
-		return snapshot.getBlockData(x, y, z);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static void sendBlockChange(Player player, Location loc, int type, int data) {
-		player.sendBlockChange(loc, type, (byte)data);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static int getBlockTypeIdAt(World world, int x, int y, int z) {
-		return world.getBlockTypeIdAt(x, y, z);
+		block.setBlockData(LegacyBridge.blockData(getId(block), data), update);
+		BlockConnections.update(block);
 	}
 
-	@SuppressWarnings("deprecation")
+	/** Item material for an old id:data. */
+	public static Material getItemMaterial(int typeId, int data) {
+		return LegacyBridge.itemMaterial(typeId, data);
+	}
+
+	/** Recipe ingredient for an old id:data; data -1 means any variant of the old id. */
+	public static RecipeChoice getRecipeChoice(int typeId, int data) {
+		if (data < 0) {
+			java.util.List<Material> variants = LegacyBridge.itemVariants(typeId);
+			if (!variants.isEmpty()) {
+				return new RecipeChoice.MaterialChoice(variants);
+			}
+		}
+		return new RecipeChoice.MaterialChoice(LegacyBridge.itemMaterial(typeId, data));
+	}
+
+	public static Material getMaterial(int material) {
+		return LegacyBridge.itemMaterial(material, 0);
+	}
+
+	public static int getBlockTypeId(ChunkSnapshot snapshot, int x, int y, int z) {
+		return LegacyBridge.idOf(snapshot.getBlockData(x, y, z));
+	}
+
+	public static int getBlockData(ChunkSnapshot snapshot, int x, int y, int z) {
+		return LegacyBridge.dataOf(snapshot.getBlockData(x, y, z), 0);
+	}
+
+	public static void sendBlockChange(Player player, Location loc, int type, int data) {
+		player.sendBlockChange(loc, LegacyBridge.blockData(type, data));
+	}
+
+	public static int getBlockTypeIdAt(World world, int x, int y, int z) {
+		return getId(world.getBlockAt(x, y, z));
+	}
+
 	public static int getId(BlockState newState) {
-		return newState.getTypeId();
+		return LegacyBridge.idOf(newState.getBlockData());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -140,19 +151,14 @@ public class ItemManager {
 		return entity.getTypeId();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static void setData(MaterialData data, byte chestData) {
-		data.setData(chestData);
+	public static void setTypeIdAndData(Block block, int type, int data, boolean update) {
+		block.setBlockData(LegacyBridge.blockData(type, data), update);
+		BlockConnections.update(block);
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void setTypeIdAndData(Block block, int type, int data, boolean update) {
-		block.setTypeIdAndData(type, (byte)data, update);
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static ItemStack spawnPlayerHead(String playerName, String itemDisplayName) {		
-		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
+	public static ItemStack spawnPlayerHead(String playerName, String itemDisplayName) {
+		ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
 		SkullMeta meta = (SkullMeta) skull.getItemMeta();
 		meta.setOwner(playerName);
 		meta.setDisplayName(itemDisplayName);
@@ -161,31 +167,34 @@ public class ItemManager {
 	}
 
 	/**
-	 * Facing of a placed dispenser. Legacy: stored in the block data (org.bukkit.material.Dispenser).
+	 * Facing of a placed dispenser.
 	 */
-	@SuppressWarnings("deprecation")
 	public static BlockFace getDispenserFacing(BlockState dispenser) {
-		return ((org.bukkit.material.Dispenser) dispenser.getData()).getFacing();
+		return ((Directional) dispenser.getBlockData()).getFacing();
 	}
 
 	/**
 	 * Set the facing of a sign state; the caller still has to call update().
 	 */
-	@SuppressWarnings("deprecation")
 	public static void setSignFacing(BlockState sign, BlockFace face) {
-		((org.bukkit.material.Sign) sign.getData()).setFacingDirection(face);
+		BlockData data = sign.getBlockData();
+		if (data instanceof Rotatable) {
+			((Rotatable) data).setRotation(face);
+		} else if (data instanceof Directional) {
+			((Directional) data).setFacing(face);
+		}
+		sign.setBlockData(data);
 	}
 
 	/**
 	 * Write the state's own data back to it (the caller still has to call update()).
 	 */
-	@SuppressWarnings("deprecation")
 	public static void reapplyData(BlockState state) {
-		state.setData(state.getData());
+		state.setBlockData(state.getBlockData());
 	}
 
 	/**
-	 * Wear of a tool or armor piece (0 = new). Legacy: stored in the item's durability field.
+	 * Wear of a tool or armor piece (0 = new).
 	 */
 	public static short getDamage(ItemStack stack) {
 		return stack.getDurability();
@@ -196,14 +205,10 @@ public class ItemManager {
 	}
 
 	/**
-	 * Copy of a stack with another amount, keeping its type, variant (legacy damage/data bits) and
-	 * material data. Item meta is not copied.
+	 * Copy of a stack with another amount, keeping its type and wear. Item meta is not copied.
 	 */
-	@SuppressWarnings("deprecation")
 	public static ItemStack copyWithAmount(ItemStack from, int amount) {
-		ItemStack copy = new ItemStack(from.getType(), amount, from.getDurability());
-		copy.setData(from.getData());
-		return copy;
+		return new ItemStack(from.getType(), amount, from.getDurability());
 	}
 
 	public static boolean removeItemFromPlayer(Player player, Material mat, int amount) {
@@ -214,5 +219,5 @@ public class ItemManager {
 		}
 		return false;
 	}
-	
+
 }

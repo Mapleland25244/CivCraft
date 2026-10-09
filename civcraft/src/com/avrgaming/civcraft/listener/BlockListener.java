@@ -1138,7 +1138,7 @@ public class BlockListener implements Listener {
 				if(tc.getTown().getCiv().getDiplomacyManager().atWarWith(resident.getTown().getCiv())) {
 
 					switch (event.getClickedBlock().getType()) {
-					case WOODEN_DOOR:
+					case OAK_DOOR:
 					case IRON_DOOR:
 					case SPRUCE_DOOR:
 					case BIRCH_DOOR:
@@ -1148,7 +1148,7 @@ public class BlockListener implements Listener {
                     case ACACIA_FENCE_GATE:
                     case BIRCH_FENCE_GATE:
                     case DARK_OAK_FENCE_GATE: 
-                    case FENCE_GATE:
+                    case OAK_FENCE_GATE:
                     case SPRUCE_FENCE_GATE:
                     case JUNGLE_FENCE_GATE: 
 						return;
@@ -1252,7 +1252,7 @@ public class BlockListener implements Listener {
 					}
 					break;
 				case CHICKEN:
-					if (inHand.getType().equals(Material.SEEDS) ||
+					if (inHand.getType().equals(Material.WHEAT_SEEDS) ||
 						inHand.getType().equals(Material.MELON_SEEDS) ||
 						inHand.getType().equals(Material.PUMPKIN_SEEDS)) {
 						denyBreeding = true;
@@ -1261,7 +1261,7 @@ public class BlockListener implements Listener {
 				case RABBIT:
 					if (inHand.getType().equals(Material.CARROT) ||
 						inHand.getType().equals(Material.GOLDEN_CARROT) ||
-						inHand.getType().equals(Material.YELLOW_FLOWER)) {
+						inHand.getType().equals(Material.DANDELION)) {
 						denyBreeding = true;
 					}
 					break;
