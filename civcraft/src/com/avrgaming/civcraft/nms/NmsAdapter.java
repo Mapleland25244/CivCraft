@@ -45,15 +45,4 @@ public interface NmsAdapter {
 	 * EntityDamageByEntityEvent for each so other plugins can modify or observe it.
 	 */
 	void damagePlayersAround(Entity attacker, Location loc, double radius, double damage);
-
-	/** Horse access that the Bukkit API does not provide. */
-	boolean isHorse(LivingEntity entity);
-
-	HorseAccess wrapHorse(LivingEntity horse);
-
-	HorseAccess spawnHorse(Location loc);
-
-	void setHorseSpeedModifier(LivingEntity horse, java.util.UUID modifierId, String name, double amount);
-
-	boolean hasHorseSpeedModifier(LivingEntity horse, java.util.UUID modifierId);
 }

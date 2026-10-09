@@ -1,46 +1,43 @@
-package com.avrgaming.civcraft.nms.v1_12_R1;
+package com.avrgaming.civcraft.nms.v1_13_R2;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
-import com.avrgaming.civcraft.nms.HorseAccess;
 import com.avrgaming.civcraft.nms.ItemNbt;
 import com.avrgaming.civcraft.nms.NmsAdapter;
 
-import net.minecraft.server.v1_12_R1.AttributeInstance;
-import net.minecraft.server.v1_12_R1.AttributeModifier;
-import net.minecraft.server.v1_12_R1.AxisAlignedBB;
-import net.minecraft.server.v1_12_R1.DamageSource;
-import net.minecraft.server.v1_12_R1.EntityInsentient;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.GenericAttributes;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.Vec3D;
+import net.minecraft.server.v1_13_R2.AttributeInstance;
+import net.minecraft.server.v1_13_R2.AxisAlignedBB;
+import net.minecraft.server.v1_13_R2.DamageSource;
+import net.minecraft.server.v1_13_R2.EntityInsentient;
+import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_13_R2.GenericAttributes;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.Vec3D;
 
-public class NmsAdapter_v1_12_R1 implements NmsAdapter {
+public class NmsAdapter_v1_13_R2 implements NmsAdapter {
 
 	@Override
 	public String getVersion() {
-		return "v1_12_R1";
+		return "v1_13_R2";
 	}
 
 	@Override
 	public ItemNbt itemNbt(ItemStack stack) {
-		return new ItemNbt_v1_12_R1(stack);
+		return new ItemNbt_v1_13_R2(stack);
 	}
 
 	@Override
@@ -53,7 +50,7 @@ public class NmsAdapter_v1_12_R1 implements NmsAdapter {
 		return null;
 	}
 
-	private static List<net.minecraft.server.v1_12_R1.Entity> entitiesInBox(Entity exempt, Location loc, double radius) {
+	private static List<net.minecraft.server.v1_13_R2.Entity> entitiesInBox(Entity exempt, Location loc, double radius) {
 		double x = loc.getX() + 0.5;
 		double y = loc.getY() + 0.5;
 		double z = loc.getZ() + 0.5;
@@ -71,7 +68,7 @@ public class NmsAdapter_v1_12_R1 implements NmsAdapter {
 	@Override
 	public List<Entity> getNearbyEntities(Entity exempt, Location loc, double radius, Class<?> filter) {
 		List<Entity> entities = new LinkedList<Entity>();
-		for (net.minecraft.server.v1_12_R1.Entity e : entitiesInBox(exempt, loc, radius)) {
+		for (net.minecraft.server.v1_13_R2.Entity e : entitiesInBox(exempt, loc, radius)) {
 			Entity bukkitEntity = e.getBukkitEntity();
 			if (filter == null || filter.isInstance(bukkitEntity)) {
 				entities.add(bukkitEntity);
@@ -103,7 +100,7 @@ public class NmsAdapter_v1_12_R1 implements NmsAdapter {
 
 	@Override
 	public void damagePlayersAround(Entity attacker, Location loc, double radius, double damage) {
-		for (net.minecraft.server.v1_12_R1.Entity e : entitiesInBox(attacker, loc, radius)) {
+		for (net.minecraft.server.v1_13_R2.Entity e : entitiesInBox(attacker, loc, radius)) {
 			if (e instanceof EntityPlayer) {
 				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, ((EntityPlayer) e).getBukkitEntity(),
 						DamageCause.ENTITY_ATTACK, damage);
@@ -113,34 +110,4 @@ public class NmsAdapter_v1_12_R1 implements NmsAdapter {
 		}
 	}
 
-	@Override
-	public boolean isHorse(LivingEntity entity) {
-		return HorseAccess_v1_12_R1.isHorse(entity);
-	}
-
-	@Override
-	public HorseAccess wrapHorse(LivingEntity horse) {
-		return new HorseAccess_v1_12_R1(horse);
-	}
-
-	@Override
-	public HorseAccess spawnHorse(Location loc) {
-		return HorseAccess_v1_12_R1.spawn(loc);
-	}
-
-	@Override
-	public void setHorseSpeedModifier(LivingEntity horse, UUID modifierId, String name, double amount) {
-		EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) horse).getHandle();
-		AttributeInstance attributes = nmsEntity.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-		AttributeModifier modifier = new AttributeModifier(modifierId, name, amount, 0);
-		attributes.b(modifier); // remove the modifier, adding a duplicate causes errors
-		attributes.a(modifier); // add the modifier
-	}
-
-	@Override
-	public boolean hasHorseSpeedModifier(LivingEntity horse, UUID modifierId) {
-		EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) horse).getHandle();
-		AttributeInstance attributes = nmsEntity.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-		return attributes.a(modifierId) != null;
-	}
 }

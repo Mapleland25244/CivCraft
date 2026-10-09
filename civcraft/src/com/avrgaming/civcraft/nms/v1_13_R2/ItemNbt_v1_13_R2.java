@@ -1,37 +1,39 @@
-package com.avrgaming.civcraft.nms.v1_12_R1;
+package com.avrgaming.civcraft.nms.v1_13_R2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.nms.AttributeData;
 import com.avrgaming.civcraft.nms.ItemNbt;
 
-import net.minecraft.server.v1_12_R1.NBTBase;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.NBTTagInt;
-import net.minecraft.server.v1_12_R1.NBTTagList;
-import net.minecraft.server.v1_12_R1.NBTTagString;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftChatMessage;
+import net.minecraft.server.v1_13_R2.IChatBaseComponent;
+import net.minecraft.server.v1_13_R2.NBTBase;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.NBTTagInt;
+import net.minecraft.server.v1_13_R2.NBTTagList;
+import net.minecraft.server.v1_13_R2.NBTTagString;
 
 /**
  * The NBT half of gpl.AttributeUtil (originally ProtocolLib's AttributeStorage example), moved here unchanged in
  * behavior, including the NBT keys. Existing items store their data under these keys, so they must not change.
  */
-public class ItemNbt_v1_12_R1 implements ItemNbt {
+public class ItemNbt_v1_13_R2 implements ItemNbt {
 
 	// NBT type ids used by getList
 	private static final int TAG_STRING = 8;
 	private static final int TAG_COMPOUND = 10;
 
-	private net.minecraft.server.v1_12_R1.ItemStack nmsStack;
+	private net.minecraft.server.v1_13_R2.ItemStack nmsStack;
 	private NBTTagCompound parent;
 	private NBTTagList attributes;
 
-	public ItemNbt_v1_12_R1(ItemStack stack) {
+	public ItemNbt_v1_13_R2(ItemStack stack) {
 		// Create a CraftItemStack (under the hood)
 		this.nmsStack = CraftItemStack.asNMSCopy(stack);
 
@@ -132,6 +134,56 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 
 	// ---- display ----
 
+	/*
+	 * 1.13 stores the display name as a JSON text component, but lore is still a list of plain section-sign strings
+	 * (lore became JSON in 1.14). CivCraft works with section-sign strings, so only the name is converted.
+	 */
+	private static String encodeName(String legacyText) {
+		if (legacyText == null) {
+			return "";
+		}
+		if (isJsonComponent(legacyText)) {
+			// already a stored component (read straight from NBT or ItemMeta): wrapping it again would show the JSON as text
+			return legacyText;
+		}
+		IChatBaseComponent component = CraftChatMessage.fromStringOrNull(legacyText);
+		if (component == null) {
+			return "";
+		}
+		// 1.12 showed names upright (a color code clears italics); 1.13 JSON text is italic unless told otherwise
+		component.getChatModifier().setItalic(false);
+		return IChatBaseComponent.ChatSerializer.a(component);
+	}
+
+	private static boolean isJsonComponent(String text) {
+		if (!text.startsWith("{\"")) {
+			return false;
+		}
+		try {
+			return IChatBaseComponent.ChatSerializer.a(text) != null;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/** Reads a stored name (JSON) or lore line (plain; JSON only on items made by a few early 1.13 test builds). */
+	private static String decodeText(String stored) {
+		if (stored == null) {
+			return "";
+		}
+		if (stored.startsWith("{") || stored.startsWith("[") || stored.startsWith("\"")) {
+			try {
+				IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a(stored);
+				if (component != null) {
+					return CraftChatMessage.fromComponent(component);
+				}
+			} catch (Exception e) {
+				// not JSON after all: return it as written
+			}
+		}
+		return stored;
+	}
+
 	@Override
 	public void addLore(String str) {
 		if (nmsStack == null) {
@@ -152,7 +204,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 			loreList = new NBTTagList();
 		}
 
-		loreList.add(new NBTTagString(str));
+		loreList.add(new NBTTagString(str == null ? "" : str));
 		displayCompound.set("Lore", loreList);
 		nmsStack.getTag().set("display", displayCompound);
 	}
@@ -184,7 +236,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 
 		String[] lore = new String[loreList.size()];
 		for (int i = 0; i < loreList.size(); i++) {
-			lore[i] = loreList.getString(i).replace("\"", "");
+			lore[i] = decodeText(loreList.getString(i));
 		}
 
 		return lore;
@@ -201,7 +253,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 		NBTTagList loreList = new NBTTagList();
 
 		for (String str : strings) {
-			loreList.add(new NBTTagString(str));
+			loreList.add(new NBTTagString(str == null ? "" : str));
 		}
 
 		displayCompound.set("Lore", loreList);
@@ -224,7 +276,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 			displayCompound = new NBTTagCompound();
 		}
 
-		displayCompound.set("Name", new NBTTagString(ChatColor.RESET + name));
+		displayCompound.set("Name", new NBTTagString(encodeName(ChatColor.RESET + name)));
 		nmsStack.getTag().set("display", displayCompound);
 	}
 
@@ -236,9 +288,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 			displayCompound = new NBTTagCompound();
 		}
 
-		String name = displayCompound.getString("Name").toString();
-		name = name.replace("\"", "");
-		return name;
+		return decodeText(displayCompound.getString("Name"));
 	}
 
 	@Override
@@ -355,7 +405,7 @@ public class ItemNbt_v1_12_R1 implements ItemNbt {
 
 		NBTTagCompound compound = nmsStack.getTag().getCompound("item_enhancements");
 
-		for (String key : compound.c()) {
+		for (String key : compound.getKeys()) {
 			Object obj = compound.get(key);
 
 			if (obj instanceof NBTTagCompound) {

@@ -2,7 +2,7 @@ package com.avrgaming.civcraft.nms;
 
 import org.bukkit.Bukkit;
 
-import com.avrgaming.civcraft.nms.v1_12_R1.NmsAdapter_v1_12_R1;
+import com.avrgaming.civcraft.nms.v1_13_R2.NmsAdapter_v1_13_R2;
 
 /**
  * Picks the {@link NmsAdapter} for the running server. To support a new version, add an adapter class and one case
@@ -22,7 +22,7 @@ public final class Nms {
 		adapter = create(version);
 		if (adapter == null) {
 			throw new IllegalStateException("CivCraft has no NMS adapter for server version '" + version
-					+ "'. Supported: v1_12_R1.");
+					+ "'. Supported: v1_13_R2.");
 		}
 	}
 
@@ -37,14 +37,14 @@ public final class Nms {
 
 	private static NmsAdapter create(String version) {
 		switch (version) {
-		case "v1_12_R1":
-			return new NmsAdapter_v1_12_R1();
+		case "v1_13_R2":
+			return new NmsAdapter_v1_13_R2();
 		default:
 			return null;
 		}
 	}
 
-	/** The last package segment of the CraftBukkit server class, e.g. "v1_12_R1". */
+	/** The last package segment of the CraftBukkit server class, e.g. "v1_13_R2". */
 	private static String serverVersion() {
 		String name = Bukkit.getServer().getClass().getPackage().getName();
 		return name.substring(name.lastIndexOf('.') + 1);
