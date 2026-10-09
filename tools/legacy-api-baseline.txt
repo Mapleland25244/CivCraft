@@ -1,9 +1,7 @@
 raw-block-id=0
 raw-block-data=0
-chunk-snapshot-id=0
-send-block-change-id=0
 material-data=0
 material-getid=0
-durability-as-data=3
+durability-as-data=0
 int-item-stack=0
 legacy-material-const=0

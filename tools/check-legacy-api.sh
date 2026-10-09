@@ -14,8 +14,6 @@ BOUNDARY='util/ItemManager.java|/compat/'
 CATEGORIES=(
 	'raw-block-id|\.(getTypeId|setTypeId|setTypeIdAndData|getRawData)\('
 	'raw-block-data|\.(getData|setData)\('
-	'chunk-snapshot-id|\.(getBlockTypeId|getBlockData|getBlockTypeIdAt)\('
-	'send-block-change-id|sendBlockChange\([^)]*,[^)]*,[^)]*\)'
 	'material-data|MaterialData|org\.bukkit\.material\.'
 	'material-getid|(Material\.[A-Z_0-9]+|getType\(\)|getMaterial\(\)|getItemType\(\))\.getId\(\)'
 	'durability-as-data|\.(getDurability|setDurability)\('
