@@ -6,6 +6,13 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,246 +20,203 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.nms.HorseAccess;
-import com.avrgaming.civcraft.nms.Nms;
- 
+
 /**
-* HorseModifier v1.1
-*
-* You are free to use it, modify it and redistribute it under the condition to give credit to me
-*
-* @author DarkBlade12
-*
-* The server-specific part (NBT through reflection, attribute modifiers) now lives behind HorseAccess in the nms package.
+* HorseModifier v1.1 (DarkBlade12), rewritten on the Bukkit API: since 1.11 horses, donkeys and mules are
+* real entity types with API methods, so no server internals are needed any more.
 */
 public class HorseModifier {
-    private HorseAccess access;
-    
+    private AbstractHorse horse;
+
     public static String HORSE_META = "civcrafthorse";
     private static final UUID movementSpeedUID = UUID.fromString("206a89dc-ae78-4c4d-b42c-3b31db3f5a7c");
- 
+
     /**
-    * Creates a new instance of the HorseModifier, which allows you to change/get values of horses which aren't accessible with the bukkit api atm
+    * Wraps an existing horse, donkey or mule.
     */
-    public HorseModifier(LivingEntity horse) {
-        if (!HorseModifier.isHorse(horse)) {
+    public HorseModifier(LivingEntity entity) {
+        if (!HorseModifier.isHorse(entity)) {
             throw new IllegalArgumentException("Entity has to be a horse!");
         }
-        this.access = Nms.get().wrapHorse(horse);
+        this.horse = (AbstractHorse) entity;
     }
- 
-    /**
-    * Creates a new instance of the HorseModifier; This constructor is only used for the static spawn method
-    */
-    private HorseModifier(HorseAccess access) {
-        this.access = access;
+
+    private HorseModifier(AbstractHorse horse) {
+        this.horse = horse;
     }
- 
+
     /**
-    * Spawns a horse at a given location
+    * Spawns a normal horse at a given location
     */
     public static HorseModifier spawn(Location loc) {
-        HorseAccess access = Nms.get().spawnHorse(loc);
-        if (access == null) {
+        return spawn(loc, HorseType.NORMAL);
+    }
+
+    /**
+    * Spawns a horse of the given type at a given location. Null if the world refused the entity.
+    */
+    public static HorseModifier spawn(Location loc, HorseType type) {
+        try {
+            AbstractHorse spawned = (AbstractHorse) loc.getWorld().spawnEntity(loc, type.getEntityType());
+            return new HorseModifier(spawned);
+        } catch (Exception e) {
+            CivLog.warning("Could not spawn a "+type.getName()+" at "+loc+": "+e.getMessage());
             return null;
         }
-        return new HorseModifier(access);
     }
- 
+
     /**
-    * Checks if an entity is a horse
+    * Checks if an entity is a horse, donkey or mule
     */
     public static boolean isHorse(LivingEntity le) {
-        return Nms.get().isHorse(le);
+        return le instanceof AbstractHorse;
     }
- 
-    
+
+
     public static void setHorseSpeed(LivingEntity entity, double amount) {
     	if (!isHorse(entity)) {
     		return;
     	}
-    	
-    	Nms.get().setHorseSpeedModifier(entity, movementSpeedUID, "civcraft horse movement speed", amount);
+
+    	AttributeInstance speed = entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+    	removeSpeedModifier(speed);
+    	speed.addModifier(new AttributeModifier(movementSpeedUID, "civcraft horse movement speed", amount, AttributeModifier.Operation.ADD_NUMBER));
     }
-    
+
+    private static void removeSpeedModifier(AttributeInstance speed) {
+    	for (AttributeModifier modifier : speed.getModifiers()) {
+    		if (modifier.getUniqueId().equals(movementSpeedUID)) {
+    			speed.removeModifier(modifier);
+    		}
+    	}
+    }
+
+    private static boolean hasSpeedModifier(LivingEntity entity) {
+    	for (AttributeModifier modifier : entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getModifiers()) {
+    		if (modifier.getUniqueId().equals(movementSpeedUID)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
     public static void setCivCraftHorse(LivingEntity entity) {
     	entity.setMetadata(HorseModifier.HORSE_META, new FixedMetadataValue(CivCraft.getPlugin(), HorseModifier.HORSE_META));
     }
-    
+
     public static boolean isCivCraftHorse(LivingEntity entity) {
-    	if (!entity.hasMetadata(HORSE_META)) {
-    		CivLog.debug("Player tried using Horse without meta: "+HORSE_META);
-    		return false;
-    	}
-    	
+    	/* The speed modifier Stable gives every horse it sells is saved with the horse; the metadata flag is not saved
+    	   (and nothing ever set it), so requiring it would refuse every horse after a restart. */
+
     	if (!isHorse(entity)) {
     		CivLog.debug("Player tried using Horse that isn't a Horse? Error in HorseModifier.java.");
     		return false;
     	}
-    	
-    	return Nms.get().hasHorseSpeedModifier(entity, movementSpeedUID);
+
+    	return hasSpeedModifier(entity);
     }
-    
+
     /**
-    * Changes the type of the horse
-    */
-    public void setType(HorseType type) {
-        access.setInt("Type", type.getId());
-    }
- 
-    /**
-    * Changes whether the horse is chested or not (only for donkeys and mules)
-    */
-    public void setChested(boolean chested) {
-        access.setBoolean("ChestedHorse", chested);
-    }
- 
-    /**
-    * Changes whether the horse is eating or not
-    */
-    public void setEating(boolean eating) {
-        access.setBoolean("EatingHaystack", eating);
-    }
- 
-    /**
-    * Changes whether the horse was bred or not
-    */
-    public void setBred(boolean bred) {
-        access.setBoolean("Bred", bred);
-    }
- 
-    /**
-    * Changes the color variant of the horse (only for normal horses)
+    * Changes the color variant of the horse (only for normal horses; mules and donkeys have none)
     */
     public void setVariant(HorseVariant variant) {
-        access.setInt("Variant", variant.getId());
+        if (!(horse instanceof Horse)) {
+            return;
+        }
+        // old variant id: low byte = color, next byte = style (marking)
+        int color = variant.getId() & 0xFF;
+        int style = variant.getId() >> 8;
+        Horse.Color[] colors = Horse.Color.values();
+        Horse.Style[] styles = Horse.Style.values();
+        ((Horse) horse).setColor(color < colors.length ? colors[color] : Horse.Color.WHITE);
+        ((Horse) horse).setStyle(style < styles.length ? styles[style] : Horse.Style.NONE);
     }
- 
+
     /**
     * Changes the temper of the horse
     */
     public void setTemper(int temper) {
-        access.setInt("Temper", temper);
+        horse.setDomestication(temper);
     }
- 
+
     /**
     * Changes whether the horse is tamed or not
     */
     public void setTamed(boolean tamed) {
-        access.setBoolean("Tame", tamed);
+        horse.setTamed(tamed);
     }
- 
+
     /**
     * Changes whether the horse is saddled or not
     */
     public void setSaddled(boolean saddled) {
-        access.setBoolean("Saddle", saddled);
+        horse.getInventory().setSaddle(saddled ? new ItemStack(Material.SADDLE) : null);
     }
- 
+
     /**
     * Sets the armor item of the horse (only for normal horses)
     */
     public void setArmorItem(ItemStack i) {
-        access.setArmorItem(i);
+        if (horse instanceof Horse) {
+            ((Horse) horse).getInventory().setArmor(i);
+        }
     }
- 
-    /**
-    * Returns the type of the horse
-    */
-    public HorseType getType() {
-        return HorseType.fromId(access.getInt("Type"));
-    }
- 
-    /**
-    * Returns whether the horse is chested or not
-    */
-    public boolean isChested() {
-        return access.getBoolean("ChestedHorse");
-    }
- 
-    /**
-    * Returns whether the horse is eating or not
-    */
-    public boolean isEating() {
-        return access.getBoolean("EatingHaystack");
-    }
- 
-    /**
-    * Returns whether the horse was bred or not
-    */
-    public boolean isBred() {
-        return access.getBoolean("Bred");
-    }
- 
-    /**
-    * Returns the variant of the horse
-    */
-    public HorseVariant getVariant() {
-        return HorseVariant.fromId(access.getInt("Variant"));
-    }
- 
-    /**
-    * Returns the temper of the horse
-    */
-    public int getTemper() {
-        return access.getInt("Temper");
-    }
- 
+
     /**
     * Returns whether the horse is tamed or not
     */
     public boolean isTamed() {
-        return access.getBoolean("Tame");
+        return horse.isTamed();
     }
- 
+
     /**
     * Returns whether the horse is saddled or not
     */
     public boolean isSaddled() {
-        return access.getBoolean("Saddle");
+        return horse.getInventory().getSaddle() != null;
     }
- 
-    /**
-    * Returns the armor item of the horse
-    */
-    public ItemStack getArmorItem() {
-        return access.getArmorItem();
-    }
- 
+
     /**
     * Opens the inventory of the horse for a player (only for tamed horses)
     */
     public void openInventory(Player p) {
-        access.openInventory(p);
+        p.openInventory(horse.getInventory());
     }
- 
+
     /**
     * Returns the horse entity
     */
-    public LivingEntity getHorse() {
-        return access.getHorse();
+    public AbstractHorse getHorse() {
+        return horse;
     }
- 
+
     public enum HorseType {
- 
-        NORMAL("normal", 0), DONKEY("donkey", 1), MULE("mule", 2), UNDEAD("undead", 3), SKELETAL("skeletal", 4);
- 
+
+        NORMAL("normal", 0, EntityType.HORSE), DONKEY("donkey", 1, EntityType.DONKEY), MULE("mule", 2, EntityType.MULE),
+        UNDEAD("undead", 3, EntityType.ZOMBIE_HORSE), SKELETAL("skeletal", 4, EntityType.SKELETON_HORSE);
+
         private String name;
         private int id;
- 
-        HorseType(String name, int id) {
+        private EntityType entityType;
+
+        HorseType(String name, int id, EntityType entityType) {
             this.name = name;
             this.id = id;
+            this.entityType = entityType;
         }
- 
+
         public String getName() {
             return name;
         }
- 
+
         public int getId() {
             return id;
         }
- 
+
+        public EntityType getEntityType() {
+            return entityType;
+        }
+
         private static final Map<String, HorseType> NAME_MAP = new HashMap<String, HorseType>();
         private static final Map<Integer, HorseType> ID_MAP = new HashMap<Integer, HorseType>();
         static {
@@ -261,7 +225,7 @@ public class HorseModifier {
                 ID_MAP.put(effect.id, effect);
             }
         }
- 
+
         public static HorseType fromName(String name) {
             if (name == null) {
                 return null;
@@ -273,12 +237,12 @@ public class HorseModifier {
             }
             return null;
         }
- 
+
         public static HorseType fromId(int id) {
             return ID_MAP.get(id);
         }
     }
- 
+
     public enum HorseVariant {
         WHITE("white", 0), CREAMY("creamy", 1), CHESTNUT("chestnut", 2), BROWN("brown", 3), BLACK("black", 4), GRAY("gray", 5), DARK_BROWN("dark brown", 6), INVISIBLE("invisible", 7), WHITE_WHITE(
                 "white-white", 256), CREAMY_WHITE("creamy-white", 257), CHESTNUT_WHITE("chestnut-white", 258), BROWN_WHITE("brown-white", 259), BLACK_WHITE("black-white", 260), GRAY_WHITE("gray-white", 261), DARK_BROWN_WHITE(
@@ -288,23 +252,23 @@ public class HorseModifier {
                 "black-white dots", 772), GRAY_WHITE_DOTS("gray-white dots", 773), DARK_BROWN_WHITE_DOTS("dark brown-white dots", 774), WHITE_BLACK_DOTS("white-black dots", 1024), CREAMY_BLACK_DOTS(
                 "creamy-black dots", 1025), CHESTNUT_BLACK_DOTS("chestnut-black dots", 1026), BROWN_BLACK_DOTS("brown-black dots", 1027), BLACK_BLACK_DOTS("black-black dots", 1028), GRAY_BLACK_DOTS(
                 "gray-black dots", 1029), DARK_BROWN_BLACK_DOTS("dark brown-black dots", 1030);
- 
+
         private String name;
         private int id;
- 
+
         HorseVariant(String name, int id) {
             this.name = name;
             this.id = id;
         }
- 
+
         public String getName() {
             return name;
         }
- 
+
         public int getId() {
             return id;
         }
- 
+
         private static final Map<String, HorseVariant> NAME_MAP = new HashMap<String, HorseVariant>();
         private static final Map<Integer, HorseVariant> ID_MAP = new HashMap<Integer, HorseVariant>();
         static {
@@ -313,7 +277,7 @@ public class HorseModifier {
                 ID_MAP.put(effect.id, effect);
             }
         }
- 
+
         public static HorseVariant fromName(String name) {
             if (name == null) {
                 return null;
@@ -325,7 +289,7 @@ public class HorseModifier {
             }
             return null;
         }
- 
+
         public static HorseVariant fromId(int id) {
             return ID_MAP.get(id);
         }

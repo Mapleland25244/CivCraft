@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Horse;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -184,25 +184,32 @@ public class Stable extends Structure {
 					paid = cost;
 				}	
 
-				HorseModifier mod;	
-				if (!horse.mule) {			
-					mod = HorseModifier.spawn(horseSpawnCoord.getLocation());
-					mod.setType(HorseType.NORMAL);
+				HorseModifier mod;
+				if (!horse.mule) {
+					mod = HorseModifier.spawn(horseSpawnCoord.getLocation(), HorseType.NORMAL);
+				} else {
+					mod = HorseModifier.spawn(muleSpawnCoord.getLocation(), HorseType.MULE);
+				}
+
+				if (mod == null) {
+					CivMessage.sendError(player, "Could not spawn the horse here.");
+					return;
+				}
+
+				if (!horse.mule) {
 					mod.setTamed(true);
 					mod.setSaddled(true);
-				} else {
-					mod = HorseModifier.spawn(muleSpawnCoord.getLocation());
-					mod.setType(HorseType.MULE);
 				}
-				
+
+				AbstractHorse spawned = mod.getHorse();
 				mod.setVariant(HorseVariant.valueOf(horse.variant));
-				HorseModifier.setHorseSpeed(mod.getHorse(), horse.speed);
-				((Horse)mod.getHorse()).setJumpStrength(horse.jump);
-				((Horse)mod.getHorse()).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(horse.health);
-				((Horse)mod.getHorse()).setHealth(horse.health);
-				((Horse)mod.getHorse()).setOwner(player);
-				((Horse)mod.getHorse()).setCustomName(horse.name);
-				((Horse)mod.getHorse()).setCustomNameVisible(true);
+				HorseModifier.setHorseSpeed(spawned, horse.speed);
+				spawned.setJumpStrength(horse.jump);
+				spawned.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(horse.health);
+				spawned.setHealth(horse.health);
+				spawned.setOwner(player);
+				spawned.setCustomName(horse.name);
+				spawned.setCustomNameVisible(true);
 				
 				CivMessage.send(player, CivColor.LightGreen+CivSettings.localize.localizedString("var_stable_buySuccess",paid,CivSettings.CURRENCY_NAME));
 			}
