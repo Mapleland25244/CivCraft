@@ -3,7 +3,6 @@ main: com.avrgaming.civcraft.main.CivCraft
 softdepend: [Vault, WorldBorder, TitleAPI, TagAPI, iTag, ProtocolLib, Herochat, HeroChat, NoCheatPlus, VanishNoPacket]
 version: 1.8.0-Beta6
 api-version: 1.13
-depend: [CustomMobs]
 
 commands:
     town:

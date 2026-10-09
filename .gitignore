@@ -9,7 +9,6 @@ target/
 *.iml
 /local-libs/*.jar
 # Third-party plugin jars (not redistributable); pom.xml expects them in civcraft/lib
-/civcraft/lib/CustomMobs-*.jar
 /civcraft/lib/Herochat.jar
 /civcraft/lib/NoCheatPlus.jar
 /civcraft/lib/TagAPI.jar

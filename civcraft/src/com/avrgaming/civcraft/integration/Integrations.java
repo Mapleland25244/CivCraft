@@ -64,8 +64,9 @@ public final class Integrations {
 		if (CivSettings.hasVanishNoPacket) {
 			vanish = new VanishNoPacketProvider();
 		}
-		if (CivSettings.hasCustomMobs) {
-			mobSpawns = new CustomMobsProvider();
+		if (CivSettings.hasMobSpawners || CivSettings.hasAmbientMobs) {
+			mobSpawns = new NativeMobSpawnProvider(CivSettings.hasMobSpawners, CivSettings.hasAmbientMobs);
+			pm.registerEvents(new MobSpawnDropListener(), plugin);
 		}
 		vaultEnabled = pm.isPluginEnabled("Vault");
 	}
@@ -105,10 +106,18 @@ public final class Integrations {
 		return p != null && p.isVanished(player);
 	}
 
+	/** Releases anything the hooks spawned into the world. Call from onDisable. */
+	public static void shutdown() {
+		MobSpawnProvider p = mobSpawns;
+		if (p instanceof NativeMobSpawnProvider) {
+			((NativeMobSpawnProvider) p).shutdown();
+		}
+	}
+
 	public static void setMobSpawnerActive(String mobName, Location loc, boolean active) {
 		MobSpawnProvider p = mobSpawns;
 		if (p == null) {
-			CivLog.warning("Unable to change Spawner; CustomMobs is not enabled");
+			CivLog.warning("Unable to change Spawner; mob spawners are disabled");
 			return;
 		}
 		p.setSpawnerActive(mobName, loc, active);

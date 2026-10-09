@@ -229,7 +229,8 @@ public class CivSettings {
 
 	public static boolean hasTitleAPI = false;
 
-	public static boolean hasCustomMobs = false;
+	public static boolean hasMobSpawners = false;
+	public static boolean hasAmbientMobs = false;
 
 	public static Material previewMaterial = Material.GLASS;
 	public static Boolean showPreview = true;
@@ -326,11 +327,16 @@ public class CivSettings {
 			CivLog.warning("TitleAPI not found, not registering TitleAPI hooks. This is fine if you're not using TitleAPI.");
 		}
 		
-		if (CivSettings.plugin.hasPlugin("CustomMobs") && CivSettings.getBoolean(spawnersConfig, "enable")) {
-			hasCustomMobs = true;
-			CivLog.info("CustomMobs hooks enabled");
+		/* Mob spawners are handled by the built-in NativeMobSpawnProvider. */
+		if (CivSettings.getBoolean(spawnersConfig, "enable")) {
+			hasMobSpawners = true;
+			CivLog.info("Mob spawners enabled");
 		} else {
-			CivLog.warning("CustomMobs not found or disabled, not registering CustomMob hooks. This is fine if you're not using Custom Mobs.");
+			CivLog.warning("Mob spawners are disabled in spawners.yml.");
+		}
+		hasAmbientMobs = plugin.getConfig().getBoolean("ambient_mobs.enable", false);
+		if (hasAmbientMobs) {
+			CivLog.warning("Ambient mob spawning is enabled. This feature is experimental.");
 		}
 		
 		try {

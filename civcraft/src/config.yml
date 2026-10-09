@@ -63,4 +63,21 @@ global_database:
 
 server_phase: 'beta8'
 
+# ============================== Custom Mobs ===============================================
+# EXPERIMENTAL (untested): custom mobs also spawn around players standing inside civ culture, using
+# the mob tier that matches the biome. They never spawn in farm chunks or on water.
+# This only controls ambient spawning; the fixed mob spawners are switched by "enable" in data/spawners.yml.
+ambient_mobs:
+    # Off by default. Set to true to try it; see docs/testing/07-native-mobs.md for what to check.
+    enable: false
+    # Seconds between spawn checks.
+    interval_seconds: 10
+    # Chance (0-1) that a check actually tries to spawn for a player.
+    chance: 0.5
+    # Spawn distance from the player, in blocks.
+    min_distance: 10
+    radius: 24
+    # Maximum custom mobs near one player.
+    max_per_player: 3
+
  

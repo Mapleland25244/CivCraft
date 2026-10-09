@@ -7,8 +7,9 @@
 #
 #
 #
-#Master Flag. If this is false, custom mobs are disabled
+#Master Flag. If this is false, the fixed mob spawners are disabled
 enable: true
+#Ambient spawning around players is configured in the plugin's config.yml (ambient_mobs).
 
 ########### Mob Spawner Generation Options #######
 generation:

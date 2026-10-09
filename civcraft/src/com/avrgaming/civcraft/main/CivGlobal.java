@@ -219,7 +219,7 @@ public class CivGlobal {
 		loadPermissionGroups();
 		loadTownChunks();
 		loadWonders();
-		if (CivSettings.hasCustomMobs) {
+		if (CivSettings.hasMobSpawners) {
 			loadMobSpawners();
 		}
 		loadStructures();

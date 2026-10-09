@@ -180,14 +180,6 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/TitleAPI-1.7.4.jar</systemPath>
     </dependency>
-    <dependency>
-      <!-- The original Eclipse project used 4.0-INDEV; the API may differ slightly. -->
-      <groupId>local</groupId>
-      <artifactId>custommobs</artifactId>
-      <version>4.17</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/CustomMobs-4.17.jar</systemPath>
-    </dependency>
 
     <!-- Town, SyncUpdateTags and SyncUpdateTagsBetweenCivs import net.md_5.itag.iTag, which no available jar
          contains. Compile against a stub; at runtime the real iTag plugin supplies the class.

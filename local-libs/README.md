@@ -1,8 +1,7 @@
 # local-libs
 
 Reserved for jars that cannot come from Maven Central. Currently unused: the third-party plugin jars
-(`Vault.jar`, `Herochat.jar`, `WorldBorder.jar`, `NoCheatPlus.jar`, `TagAPI.jar`, `TitleAPI-1.7.4.jar`,
-`CustomMobs-4.17.jar`) are expected in `civcraft/lib/` and are git-ignored.
+(`Vault.jar`, `Herochat.jar`, `WorldBorder.jar`, `NoCheatPlus.jar`, `TagAPI.jar`, `TitleAPI-1.7.4.jar`) are expected in `civcraft/lib/` and are git-ignored.
 
 ## Spigot / CraftBukkit / NMS (v1_12_R1)
 

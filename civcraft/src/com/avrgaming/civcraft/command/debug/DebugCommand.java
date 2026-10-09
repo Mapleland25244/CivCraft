@@ -259,8 +259,8 @@ public class DebugCommand extends CommandBase {
 	
 	public void disablemap_cmd() throws CivException {
 		Player player = getPlayer();
-		player.sendMessage("§3§6§3§6§3§6§e");
-		player.sendMessage("§3§6§3§6§3§6§d");
+		player.sendMessage("ï¿½3ï¿½6ï¿½3ï¿½6ï¿½3ï¿½6ï¿½e");
+		player.sendMessage("ï¿½3ï¿½6ï¿½3ï¿½6ï¿½3ï¿½6ï¿½d");
 		CivMessage.sendSuccess(player, "Disabled.");
 	}
 	
@@ -1131,7 +1131,7 @@ public class DebugCommand extends CommandBase {
 	}
 	
 	public void mobspawnergenerate_cmd() throws CivException {
-		if (CivSettings.hasCustomMobs) {
+		if (CivSettings.hasMobSpawners) {
 			String playerName;
 			
 			if (sender instanceof Player) {
@@ -1178,7 +1178,7 @@ public class DebugCommand extends CommandBase {
 	}
 	
 	public void createmobspawner_cmd() throws CivException {
-		if (CivSettings.hasCustomMobs) {
+		if (CivSettings.hasMobSpawners) {
 			if (args.length < 2) {
 				throw new CivException("Enter mob spawner id");
 			}
