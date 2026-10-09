@@ -49,8 +49,15 @@ public class ACManager implements PluginMessageListener {
 	static boolean enabled = true;
 	
 	public static void init() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(CivCraft.getPlugin(), "CAC");
-        Bukkit.getMessenger().registerIncomingPluginChannel(CivCraft.getPlugin(), "CAC", new ACManager());
+		try {
+			Bukkit.getMessenger().registerOutgoingPluginChannel(CivCraft.getPlugin(), "CAC");
+			Bukkit.getMessenger().registerIncomingPluginChannel(CivCraft.getPlugin(), "CAC", new ACManager());
+		} catch (IllegalArgumentException e) {
+			// 1.13 requires "namespace:name" channels; the old "CAC" client mod cannot be reached, so the check stays off
+			CivLog.warning("CivCraftAC is disabled: the 'CAC' plugin channel is not valid on this server version ("+e.getMessage()+").");
+			enabled = false;
+			return;
+		}
         
         try {
 			versionNumber = CivSettings.getString(CivSettings.nocheatConfig, "civcraft_ac_version");

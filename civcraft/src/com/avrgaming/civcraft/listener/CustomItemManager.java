@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.listener;
 
+import com.avrgaming.civcraft.compat.LegacyIds;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -645,13 +646,17 @@ public class CustomItemManager implements Listener {
 				event.getItem().remove();
 				event.setCancelled(true);
 			}
-		} else if (ItemManager.getId(event.getItem().getItemStack()) == ItemManager.getId(Material.RAW_FISH)
+		} else if (ItemManager.getId(event.getItem().getItemStack()) == LegacyIds.RAW_FISH
 				&& ItemManager.getData(event.getItem().getItemStack()) == 
-					ItemManager.getData(ItemManager.getMaterialData(CivData.FISH_RAW, CivData.CLOWNFISH))) {
+					ItemManager.getData(ItemManager.createItemStack(CivData.FISH_RAW, 1, (short) CivData.CLOWNFISH))) {
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(event.getItem().getItemStack());
 			if (craftMat == null) {
 				/* Found a vanilla clownfish. */
 				LoreCraftableMaterial clown = LoreCraftableMaterial.getCraftMaterialFromId("mat_vanilla_clownfish");
+				if (clown == null) {
+					/* This vanilla fish has no custom replacement in materials.yml (commented out); leave it alone. */
+					return;
+				}
 				ItemStack newStack = LoreCraftableMaterial.spawn(clown);
 				newStack.setAmount(event.getItem().getItemStack().getAmount());
 				event.getPlayer().getInventory().addItem(newStack);
@@ -659,13 +664,17 @@ public class CustomItemManager implements Listener {
 				event.getItem().remove();
 				event.setCancelled(true);
 			}
-		} else if (ItemManager.getId(event.getItem().getItemStack()) == ItemManager.getId(Material.RAW_FISH)
+		} else if (ItemManager.getId(event.getItem().getItemStack()) == LegacyIds.RAW_FISH
 				&& ItemManager.getData(event.getItem().getItemStack()) == 
-					ItemManager.getData(ItemManager.getMaterialData(CivData.FISH_RAW, CivData.PUFFERFISH))) {
+					ItemManager.getData(ItemManager.createItemStack(CivData.FISH_RAW, 1, (short) CivData.PUFFERFISH))) {
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(event.getItem().getItemStack());
 			if (craftMat == null) {
 				/* Found a vanilla pufferfish. */
 				LoreCraftableMaterial clown = LoreCraftableMaterial.getCraftMaterialFromId("mat_vanilla_pufferfish");
+				if (clown == null) {
+					/* This vanilla fish has no custom replacement in materials.yml (commented out); leave it alone. */
+					return;
+				}
 				ItemStack newStack = LoreCraftableMaterial.spawn(clown);
 				newStack.setAmount(event.getItem().getItemStack().getAmount());
 				event.getPlayer().getInventory().addItem(newStack);
@@ -695,26 +704,34 @@ public class CustomItemManager implements Listener {
 			}
 		}
 		
-		if (ItemManager.getId(event.getCurrentItem()) == ItemManager.getId(Material.RAW_FISH)
+		if (ItemManager.getId(event.getCurrentItem()) == LegacyIds.RAW_FISH
 				&& ItemManager.getData(event.getCurrentItem()) == 
-					ItemManager.getData(ItemManager.getMaterialData(CivData.FISH_RAW, CivData.CLOWNFISH))) {
+					ItemManager.getData(ItemManager.createItemStack(CivData.FISH_RAW, 1, (short) CivData.CLOWNFISH))) {
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(event.getCurrentItem());
 			if (craftMat == null) {
 				/* Found a vanilla slime ball. */
 				LoreCraftableMaterial clown = LoreCraftableMaterial.getCraftMaterialFromId("mat_vanilla_clownfish");
+				if (clown == null) {
+					/* This vanilla fish has no custom replacement in materials.yml (commented out); leave it alone. */
+					return;
+				}
 				ItemStack newStack = LoreCraftableMaterial.spawn(clown);
 				newStack.setAmount(event.getCurrentItem().getAmount());
 				event.setCurrentItem(newStack);
 			}
 		}
 		
-		if (ItemManager.getId(event.getCurrentItem()) == ItemManager.getId(Material.RAW_FISH)
+		if (ItemManager.getId(event.getCurrentItem()) == LegacyIds.RAW_FISH
 				&& ItemManager.getData(event.getCurrentItem()) == 
-					ItemManager.getData(ItemManager.getMaterialData(CivData.FISH_RAW, CivData.PUFFERFISH))) {
+					ItemManager.getData(ItemManager.createItemStack(CivData.FISH_RAW, 1, (short) CivData.PUFFERFISH))) {
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(event.getCurrentItem());
 			if (craftMat == null) {
 				/* Found a vanilla slime ball. */
 				LoreCraftableMaterial clown = LoreCraftableMaterial.getCraftMaterialFromId("mat_vanilla_pufferfish");
+				if (clown == null) {
+					/* This vanilla fish has no custom replacement in materials.yml (commented out); leave it alone. */
+					return;
+				}
 				ItemStack newStack = LoreCraftableMaterial.spawn(clown);
 				newStack.setAmount(event.getCurrentItem().getAmount());
 				event.setCurrentItem(newStack);
@@ -940,7 +957,7 @@ public class CustomItemManager implements Listener {
 					continue;
 				}
 				
-				ConfigRemovedRecipes removed = CivSettings.removedRecipies.get(stack.getTypeId());
+				ConfigRemovedRecipes removed = CivSettings.removedRecipies.get(ItemManager.getId(stack));
 				if (removed == null && !stack.getType().equals(Material.ENCHANTED_BOOK)) {
 					/* Not in removed list, so allow it. */
 					continue;

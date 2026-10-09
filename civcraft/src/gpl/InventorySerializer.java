@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
+import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.util.ItemManager;
 
 /*
@@ -23,12 +24,12 @@ public class InventorySerializer {
 	private static String getSerializedItemStack(ItemStack is) {
         String serializedItemStack = new String();
         
-        String isType = String.valueOf(ItemManager.getId(is.getType()));
+        String isType = String.valueOf(ItemManager.getId(is));
         serializedItemStack += "t@" + isType;
        
-        if (is.getDurability() != 0)
+        if (ItemManager.getData(is) != 0)
         {
-            String isDurability = String.valueOf(is.getDurability());
+            String isDurability = String.valueOf(ItemManager.getData(is));
             serializedItemStack += "&d@" + isDurability;
         }
        
@@ -56,10 +57,9 @@ public class InventorySerializer {
         	}
         }
         
-        if (meta != null) {
-        	if (meta.getDisplayName() != null) {
-        		serializedItemStack += "&D@" + meta.getDisplayName();
-        	}
+        if (meta != null && meta.hasDisplayName()) {
+        	// Base64: a name may contain the separators used by this format and by WarRegen (: & @ #)
+        	serializedItemStack += "&N@" + new String(Base64Coder.encode(meta.getDisplayName().getBytes()));
         }
         
         LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(is);
@@ -82,6 +82,7 @@ public class InventorySerializer {
 	private static ItemStack getItemStackFromSerial(String serial) {
         ItemStack is = null;
         Boolean createdItemStack = false;
+        int typeId = 0;
         List<String> lore = new LinkedList<String>();
        
         //String[] serializedItemStack = serializedBlock[1].split("&");
@@ -91,12 +92,14 @@ public class InventorySerializer {
             String[] itemAttribute = itemInfo.split("@");
             if (itemAttribute[0].equals("t"))
             {
-                is = ItemManager.createItemStack(Integer.valueOf(itemAttribute[1]), 1);
+                typeId = Integer.valueOf(itemAttribute[1]);
+                is = ItemManager.createItemStack(typeId, 1);
                 createdItemStack = true;
             }
             else if (itemAttribute[0].equals("d") && createdItemStack)
             {
-                is.setDurability(Short.valueOf(itemAttribute[1]));
+                // the old durability is wear for tools and the variant (dye color, wool color...) for everything else
+                is = ItemManager.createItemStack(typeId, 1, Short.valueOf(itemAttribute[1]));
             }
             else if (itemAttribute[0].equals("a") && createdItemStack)
             {
@@ -112,10 +115,10 @@ public class InventorySerializer {
             	String decodedString = new String(decode);                	
             	lore.add(decodedString);
             }
-            else if (itemAttribute[0].equals("D") && createdItemStack) {
+            else if ((itemAttribute[0].equals("D") || itemAttribute[0].equals("N")) && createdItemStack && itemAttribute.length > 1) {
             	ItemMeta meta = is.getItemMeta();
             	if (meta != null) {
-            		meta.setDisplayName(itemAttribute[1]);
+            		meta.setDisplayName(itemAttribute[0].equals("N") ? new String(Base64Coder.decode(itemAttribute[1])) : itemAttribute[1]);
             	}
             	is.setItemMeta(meta);
             } else if (itemAttribute[0].equals("C")) {
@@ -200,8 +203,13 @@ public class InventorySerializer {
                 continue;
             }
            
-            ItemStack is = getItemStackFromSerial(serializedBlock[1]);
-            inv.setItem(stackPosition, is);
+            try {
+                ItemStack is = getItemStackFromSerial(serializedBlock[1]);
+                inv.setItem(stackPosition, is);
+            } catch (RuntimeException e) {
+                // one unreadable item must not cost the whole inventory
+                CivLog.warning("Could not restore the item in slot "+stackPosition+" ("+serializedBlock[1]+"): "+e);
+            }
         }
         
         if (inv instanceof PlayerInventory) {

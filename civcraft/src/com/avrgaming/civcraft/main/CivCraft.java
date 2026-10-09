@@ -250,6 +250,9 @@ public final class CivCraft extends JavaPlugin {
 
 		try {
 			Nms.init();
+			for (String line : com.avrgaming.civcraft.compat.LegacyBridge.selfTest()) {
+				CivLog.info(line);
+			}
 		} catch (IllegalStateException e) {
 			CivLog.error(e.getMessage());
 			setError(true);
