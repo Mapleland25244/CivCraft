@@ -28,6 +28,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Consumer;
 
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -77,21 +78,43 @@ public class ItemFrameStorage {
 		CivLog.debug("Entity: "+EntityType.ITEM_FRAME.toString());
 		CivLog.debug("location: "+location.toString());
 		CivLog.debug("Blockface: "+blockface.toString());
-		ItemFrame frame = (ItemFrame)location.getWorld().spawnEntity(location, EntityType.ITEM_FRAME);
+		this.location = location;
+		this.attachedBlock = new BlockCoord(location);
+
+		/*
+		 * Since 1.13 the server checks that the frame has a wall to hang on when it is spawned, and the frame is
+		 * created facing the first free wall it finds. Give it the wanted facing explicitly.
+		 */
+		ItemFrame frame;
+		try {
+			frame = location.getWorld().spawn(location, ItemFrame.class, new Consumer<ItemFrame>() {
+				@Override
+				public void accept(ItemFrame spawned) {
+					spawned.setFacingDirection(blockface, true);
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			CivLog.error("Could not place an item frame at "+location+" facing "+blockface+": "+e.getMessage());
+			return;
+		}
 		CivLog.debug("ID: "+frame.getUniqueId());
 		//frame.setItem(new ItemStack(Material.BAKED_POTATO));
-		
+
 		this.frameID = frame.getUniqueId();
 		this.location = frame.getLocation();
-		this.attachedBlock = new BlockCoord(location);
 		CivGlobal.addProtectedItemFrame(this);
-		
+
 	}
 	
 	public ItemFrame getItemFrame() {
 		// Gets the item frame by loading in the chunk where it is supposed to reside.
 		// Then searching for it's UUID.
 		
+		if (this.frameID == null) {
+			// the frame could not be placed when it was created (see the constructor)
+			return null;
+		}
+
 		if (!this.location.getChunk().isLoaded()) {
 			if (!this.location.getChunk().load()) {
 				CivLog.error("Could not load chunk to get item frame at:"+this.location);

@@ -115,7 +115,7 @@ public class TradeGoodPopulator extends BlockPopulator {
     		structSign.setAction("");
     		structSign.setType("");
     		structSign.setText(sign.getLines());
-    		structSign.setDirection(ItemManager.getData(sign.getData()));
+    		structSign.setDirection(ItemManager.getData(sign));
     		CivGlobal.addStructureSign(structSign);
             ProtectedBlock pbsign = new ProtectedBlock(new BlockCoord(signBlock), ProtectedBlock.Type.TRADE_MARKER);
             CivGlobal.addProtectedBlock(pbsign);
