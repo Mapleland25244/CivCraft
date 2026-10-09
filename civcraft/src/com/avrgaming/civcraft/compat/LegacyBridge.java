@@ -119,12 +119,13 @@ public final class LegacyBridge {
 				// the item table has no entry: try the block table, then the block state, and say so in the log
 				Material asBlock = Bukkit.getUnsafe().fromLegacy(legacyData, false);
 				Material asState = fromLegacyOrAir(legacy, variant & 0xF).getMaterial();
-				Bukkit.getLogger().warning("[CivCraft] legacy item " + id + ":" + variant + " (" + legacy + ") has no item mapping; block table="
-						+ asBlock + ", block state=" + asState);
 				if (asBlock != Material.AIR) {
 					m = asBlock;
 				} else if (asState != null && asState != Material.AIR) {
-					m = asState;
+					m = asState; // e.g. 181:1-7, invalid data bits of the double red sandstone slab
+				} else {
+					Bukkit.getLogger().warning("[CivCraft] legacy item " + id + ":" + variant + " (" + legacy + ") has no item mapping; block table="
+							+ asBlock + ", block state=" + asState);
 				}
 			}
 			ITEM_CACHE.put(k, m);
@@ -204,6 +205,11 @@ public final class LegacyBridge {
 		BlockData d = BLOCK_DATA_CACHE.get(k);
 		if (d == null) {
 			d = convertBlock(id, legacy, data & 0xF);
+			if (d instanceof org.bukkit.block.data.type.Leaves) {
+				// blueprint leaves have no logs next to them: keep them from decaying (1.12 data bit 0x4, not present in the .def files)
+				d = d.clone();
+				((org.bukkit.block.data.type.Leaves) d).setPersistent(true);
+			}
 			BLOCK_DATA_CACHE.put(k, d);
 		}
 		return d;
