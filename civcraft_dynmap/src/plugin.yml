@@ -1,4 +1,5 @@
 name: dynmap-civcraft
 main: com.avrgaming.dynmap.civcraft.DynmapCivcraftPlugin
 version: 1.0
+api-version: 1.13
 depend: [dynmap, CivCraft]

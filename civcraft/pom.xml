@@ -56,7 +56,7 @@
   <dependencies>
 
     <!-- ============================================================
-         1. Server API (Paper) + NMS (v1_12_R1, Spigot from BuildTools; local repo only).
+         1. Server API (Paper) + NMS (v1_13_R2, Spigot from BuildTools; local repo only).
             paper-api must stay before spigot: spigot also contains the Bukkit API classes.
          ============================================================ -->
     <dependency>

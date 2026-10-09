@@ -25,11 +25,11 @@
     <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Compile against the Paper API (a superset of the Spigot API). The server is still 1.12.2.
+    <!-- Compile against the Paper API (a superset of the Spigot API). The server is 1.13.2 (U1).
          Resolved from the PaperMC repository below. -->
     <paper.version>1.13.2-R0.1-SNAPSHOT</paper.version>
-    <!-- Server internals (NMS, v1_12_R1) are not published for Paper: install into ~/.m2 with BuildTools
-         (java -jar BuildTools.jar, rev 1.12.2). Only the nms package uses it. -->
+    <!-- Server internals (NMS, v1_13_R2) are not published for Paper: install into ~/.m2 with BuildTools
+         (java -jar BuildTools.jar, rev 1.13.2). Only the nms package uses it. -->
     <spigot.version>1.13.2-R0.1-SNAPSHOT</spigot.version>
   </properties>
 
